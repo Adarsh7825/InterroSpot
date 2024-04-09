@@ -1,0 +1,28 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "the is a realtime codeshare",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "author": "Adarsh Gupta",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "child_process": "^1.0.2",
+    "compilex": "^0.7.4",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "ezcompilex": "^0.7.4",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.0.3",
+    "peer": "^1.0.2",
+    "simple-peer": "^9.11.1",
+    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.7.4",
+    "vm2": "^3.9.19",
+    "wrtc": "^0.4.7"
+  }
+}

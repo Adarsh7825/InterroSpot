@@ -1,0 +1,72 @@
+import React, { useState, useEffect } from 'react';
+import { ACTIONS } from '../Actions';
+
+const CursorTracker = ({ socketRef, roomId, username }) => {
+    const [cursors, setCursors] = useState({});
+
+    // Update cursor position based on mousemove event
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            const newCursorPosition = { x: e.clientX, y: e.clientY };
+            setCursors((prev) => ({ ...prev, [username]: newCursorPosition }));
+            emitCursorUpdate(newCursorPosition);
+        };
+
+        const emitCursorUpdate = (position) => {
+            if (socketRef.current) {
+                socketRef.current.emit(ACTIONS.CURSOR_POSITION_UPDATE, {
+                    roomId,
+                    username,
+                    x: position.x,
+                    y: position.y,
+                });
+            }
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+
+        // Clean up the event listener on component unmount
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+        };
+    }, [socketRef, roomId, username]);
+    useEffect(() => {
+        console.log("CursorTracker - cursors:", cursors);
+
+        if (socketRef.current) {
+            socketRef.current.on(ACTIONS.CURSOR_POSITION_UPDATE, (data) => {
+                console.log("Received cursor position update:", data);
+                setCursors((prev) => ({ ...prev, [data.username]: { x: data.x, y: data.y } }));
+            });
+        }
+
+        return () => {
+            socketRef.current.off(ACTIONS.CURSOR_POSITION_UPDATE);
+        };
+    }, [socketRef, cursors]);
+
+    // Render all cursors
+    return (
+        <>
+            {Object.keys(cursors).map((username) => (
+
+                <div
+                    key={username}
+                    className="w-4 h-4 bg-blue-500 absolute rounded-full transform -translate-x-1/2 -translate-y-1/2 cursor-pointer border-2 border-white"
+                    style={{
+                        left: `${cursors[username].x}px`,
+                        top: `${cursors[username].y}px`,
+                        boxShadow: '0 0 5px rgba(0, 0, 0, 0.5)',
+                        zIndex: 1000,
+                        pointerEvents: 'none',
+                    }}
+                >
+
+                    <span className="text-white text-xs font-semibold">{username}</span>
+                </div>
+            ))}
+        </>
+    );
+};
+
+export default CursorTracker;
