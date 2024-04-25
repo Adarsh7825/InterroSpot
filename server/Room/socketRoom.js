@@ -1,4 +1,4 @@
-const diff = require('deep-diff').diff;
+const diff = require('diff-match-patch');
 const dmp = new diff.diff_match_patch();
 let room = {};
 

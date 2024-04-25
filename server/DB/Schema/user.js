@@ -31,7 +31,7 @@ const UserSchema = new Schema({
     role: {
         type: String,
         default: "user",
-        enum: ["user", "interviewer"],
+        enum: ["user", "interviewer", "Admin"],
     },
     editor: {
         language: {
