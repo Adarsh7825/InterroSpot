@@ -1,15 +1,15 @@
 const bcrypt = require('bcrypt');
 const User = require('../DB/Schema/User');
-const OTP = reuire('../DB/Schema/OTP');
+const OTP = require('../DB/Schema/OTP');
 const jwt = require('jsonwebtoken');
 const otpGenerator = require('otp-generator');
 const mailSender = require('../utils/mailSender');
-const emailTemplate = require('../utils/templates/emailVerificationTemplate');
+const emailTemplate = require('../mail/templates/emailVerificationTemplate');
 const { passwordUpdated } = require('../mail/templates/passwordUpdate');
 const Profile = require('../DB/Schema/Profile');
 require('dotenv').config();
 
-exports.signup = async (req, res) => {
+module.exports.signup = async (req, res) => {
     try {
         const { firstName,
             lastName,
@@ -21,11 +21,11 @@ exports.signup = async (req, res) => {
             otp,
         } = req.body;
 
-        if (!firstName || !lastName || !email || !password || !confirmPassword || !accountType || !contactNumber || !otp) {
-            return res.status(400).json({
-                message: "All fields are required"
-            });
-        }
+        // if (!firstName || !lastName || !email || !password || !confirmPassword || !accountType || !contactNumber || !otp) {
+        //     return res.status(400).json({
+        //         message: "All fields are required"
+        //     });
+        // }
 
         if (password !== confirmPassword) {
             return res.status(400).json({
@@ -55,7 +55,7 @@ exports.signup = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        let approved;
+        let approved = "";
         switch (accountType) {
             case "recruiter":
                 approved = true;
@@ -102,7 +102,7 @@ exports.signup = async (req, res) => {
     }
 };
 
-exports.login = async (req, res) => {
+module.exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -155,7 +155,7 @@ exports.login = async (req, res) => {
 };
 
 
-exports.sendotp = async (req, res) => {
+module.exports.sendotp = async (req, res) => {
     try {
         const { email } = req?.body;
 
@@ -222,7 +222,7 @@ exports.sendotp = async (req, res) => {
     }
 };
 
-exports.changePassword = async (req, res) => {
+module.exports.changePassword = async (req, res) => {
     try {
         const userDetails = await User.findOne(req.user.id);
 

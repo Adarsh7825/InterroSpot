@@ -1,8 +1,7 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const User = require('../DB/Schema/user');
 
-exports.auth = async (req, res, next) => {
+module.exports.auth = async (req, res, next) => {
     try {
         const token = req.cookeis.token || req.body.token || req.header("Authorization").replace("Bearer ", "");
         if (!token) {
@@ -37,7 +36,7 @@ exports.auth = async (req, res, next) => {
     }
 };
 
-exports.isCandidate = async (req, res, next) => {
+module.exports.isCandidate = async (req, res, next) => {
     try {
         if (req.user.accountType !== 'candidate') {
             return res.status(401).json({
@@ -54,7 +53,7 @@ exports.isCandidate = async (req, res, next) => {
     }
 };
 
-exports.isInterviewer = async (req, res, next) => {
+module.exports.isInterviewer = async (req, res, next) => {
     try {
         if (req.user.accountType !== 'interviewer') {
             return res.status(401).json({
@@ -71,7 +70,7 @@ exports.isInterviewer = async (req, res, next) => {
     }
 };
 
-exports.isRecruiter = async (req, res, next) => {
+module.exports.isRecruiter = async (req, res, next) => {
     try {
         if (req.user.accountType !== 'recruiter') {
             return res.status(401).json({
@@ -88,7 +87,7 @@ exports.isRecruiter = async (req, res, next) => {
     }
 };
 
-exports.isAdmin = async (req, res, next) => {
+module.exports.isAdmin = async (req, res, next) => {
     try {
         if (req.user.accountType !== 'admin') {
             return res.status(401).json({

@@ -20,6 +20,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.3.2",
     "moongoose": "^0.0.5",
+    "nodemailer": "^6.9.13",
+    "otp-generator": "^4.0.1",
     "socket.io": "^4.7.5",
     "validator": "^13.11.0"
   }

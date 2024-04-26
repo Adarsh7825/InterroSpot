@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const mailSender = require("../../utils/mailSender");
-const emialTemplate = require("../../utils/emailTemplate");
-
+const emailTemplate = require("../../mail/templates/emailVerificationTemplate");
 const OTPSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -21,7 +20,7 @@ const OTPSchema = new mongoose.Schema({
 
 async function sendverification(email, otp) {
     try {
-        const mailResponse = await mailSender(email, "OTP for Verification", emialTemplate(otp));
+        const mailResponse = await mailSender(email, "OTP for Verification", emailTemplate(otp));
         console.log("Email sent Successfully : ", mailResponse?.response);
         console.log("mail response 2 ", mailResponse);
     } catch (error) {
