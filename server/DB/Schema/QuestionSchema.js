@@ -17,3 +17,5 @@ const QuestionSchema = new mongoose.Schema({
     correctOption: String, // For MCQs
     answer: String, // For open-ended questions
 });
+
+module.exports = mongoose.model("Question", QuestionSchema);
