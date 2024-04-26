@@ -30,14 +30,14 @@ const UserSchema = new Schema({
     },
     role: {
         type: String,
-        default: "user",
-        enum: ["user", "interviewer", "Admin"],
+        default: "candidate",
+        enum: ["candidate", "interviewer", "recruiter", "admin",],
     },
     editor: {
         language: {
             type: String,
             default: "javascript",
-            enum: ["javascript", "python", "java", "c++", "c", "ruby", "swift", "go", "php", "typescript", "csharp"]
+            trim: true,
         },
         theme: {
             type: String,
@@ -157,43 +157,43 @@ const UserSchema = new Schema({
     }]
 }, { timestamps: true });
 
-UserSchema.methods.toJSON = function () {
-    let obj = this.toObject();
-    delete obj.createdAt;
-    delete obj.updatedAt;
-    delete obj.__v;
-    if (obj.password) delete obj.password;
-    return obj;
-};
+// UserSchema.methods.toJSON = function () {
+//     let obj = this.toObject();
+//     delete obj.createdAt;
+//     delete obj.updatedAt;
+//     delete obj.__v;
+//     if (obj.password) delete obj.password;
+//     return obj;
+// };
 
-UserSchema.method.generateAuthToken = async function () {
-    const user = this
-    const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET, { expiresIn: '7 day' })
-    return token
-};
+// UserSchema.method.generateAuthToken = async function () {
+//     const user = this
+//     const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET, { expiresIn: '7 day' })
+//     return token
+// };
 
-UserSchema.statics.findByCredentials = async (email, password) => {
-    const user = await User.findOne({ email })
-    if (!user) throw new Error('Wrong email or password')
-    const isMatch = await bcrypt.compare(password, user.password)
-    if (!isMatch) throw new Error('wrong email or password')
-    return user
-};
+// UserSchema.statics.findByCredentials = async (email, password) => {
+//     const user = await User.findOne({ email })
+//     if (!user) throw new Error('Wrong email or password')
+//     const isMatch = await bcrypt.compare(password, user.password)
+//     if (!isMatch) throw new Error('wrong email or password')
+//     return user
+// };
 
-userSchema.pre('save', async function (next) {
-    const user = this;
-    if (user.password) {
-        if (user.isModified('password')) {
-            user.password = await bcrypt.hash(user.password, 9)
-        }
-    }
-    next()
-})
+// userSchema.pre('save', async function (next) {
+//     const user = this;
+//     if (user.password) {
+//         if (user.isModified('password')) {
+//             user.password = await bcrypt.hash(user.password, 9)
+//         }
+//     }
+//     next()
+// })
 
-userSchema.pre('remove', async function (next) {
-    const user = this
-    await Room.deleteMany({ owner: user._id })
-    next()
-})
+// userSchema.pre('remove', async function (next) {
+//     const user = this
+//     await Room.deleteMany({ owner: user._id })
+//     next()
+// })   
 
 module.exports = mongoose.model("User", UserSchema);
