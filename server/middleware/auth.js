@@ -21,7 +21,7 @@ exports.auth = async (req, res, next) => {
         }
 
         req.user = user;
-        next(); ``
+        next();
     } catch (error) {
         if (error.message === 'User not found') {
             return res.status(401).json({
@@ -34,5 +34,73 @@ exports.auth = async (req, res, next) => {
                 message: 'Something went wrong while validating the token',
             });
         }
+    }
+};
+
+exports.isCandidate = async (req, res, next) => {
+    try {
+        if (req.user.accountType !== 'candidate') {
+            return res.status(401).json({
+                success: false,
+                message: 'You are not authorized to access this route',
+            });
+        }
+        next();
+    } catch (error) {
+        return res.status(401).json({
+            success: false,
+            message: 'You are not authorized to access this route',
+        });
+    }
+};
+
+exports.isInterviewer = async (req, res, next) => {
+    try {
+        if (req.user.accountType !== 'interviewer') {
+            return res.status(401).json({
+                success: false,
+                message: 'You are not authorized to access this route',
+            });
+        }
+        next();
+    } catch (error) {
+        return res.status(401).json({
+            success: false,
+            message: 'You are not authorized to access this route',
+        });
+    }
+};
+
+exports.isRecruiter = async (req, res, next) => {
+    try {
+        if (req.user.accountType !== 'recruiter') {
+            return res.status(401).json({
+                success: false,
+                message: 'You are not authorized to access this route',
+            });
+        }
+        next();
+    } catch (error) {
+        return res.status(401).json({
+            success: false,
+            message: 'You are not authorized to access this route',
+        });
+    }
+};
+
+exports.isAdmin = async (req, res, next) => {
+    try {
+        if (req.user.accountType !== 'admin') {
+            return res.status(401).json({
+                success: false,
+                message: 'You are not authorized to access this route',
+            });
+        }
+        next();
+    } catch (error) {
+        return res.status(401).json({
+            success: false,
+            message: 'You are not authorized to access this route',
+        });
     }
 };

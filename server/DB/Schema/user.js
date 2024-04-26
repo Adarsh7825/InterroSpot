@@ -28,7 +28,7 @@ const UserSchema = new Schema({
     avatar: {
         type: String
     },
-    role: {
+    accountType: {
         type: String,
         default: "candidate",
         enum: ["candidate", "interviewer", "recruiter", "admin",],
