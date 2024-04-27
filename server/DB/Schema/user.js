@@ -2,11 +2,17 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const Schema = mongoose.Schema;
 
+
 const UserSchema = new Schema({
-    name: {
+    firstName: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+    },
+    lastName: {
+        type: String,
+        required: true,
+        trim: true,
     },
     email: {
         type: String,
@@ -20,13 +26,31 @@ const UserSchema = new Schema({
             }
         }
     },
+    approved: {
+        type: Boolean,
+        default: true,
+    },
+    additionalDetails: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "Profile",
+    },
+    token: {
+        type: String,
+    },
+    resetPasswordExpires: {
+        type: Date,
+    },
     password: {
         type: String,
         required: true,
-        minLength: 7
     },
     avatar: {
         type: String
+    },
+    image: {
+        type: String,
+        required: true,
     },
     accountType: {
         type: String,
@@ -196,4 +220,9 @@ const UserSchema = new Schema({
 //     next()
 // })   
 
-module.exports = mongoose.model("User", UserSchema);
+const modelName = 'User';
+
+// Check if the model has already been compiled
+module.exports = mongoose.models[modelName]
+    ? mongoose.model(modelName)
+    : mongoose.model(modelName, UserSchema);

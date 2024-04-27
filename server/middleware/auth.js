@@ -1,40 +1,44 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const User = require('../DB/Schema/user')
 
-module.exports.auth = async (req, res, next) => {
+exports.auth = async (req, res, next) => {
     try {
-        const token = req.cookeis.token || req.body.token || req.header("Authorization").replace("Bearer ", "");
+        //extract token
+        const token = req.cookies.token
+            || req.body.token
+            || req.header("Authorization").replace("Bearer ", "");
+
+        //if token missing, then return response
         if (!token) {
             return res.status(401).json({
                 success: false,
-                message: 'Token is misisng',
+                message: 'Token is missing',
             });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log(decoded);
-
-        const user = await User.findById(decoded._id);
-        if (!user) {
-            throw new Error('User not found');
+        //verify the token
+        try {
+            const decode = jwt.verify(token, process.env.JWT_SECRET);
+            console.log(decode);
+            req.user = decode;
         }
-
-        req.user = user;
+        catch (err) {
+            //verification - issue
+            return res.status(401).json({
+                success: false,
+                message: 'token is invalid',
+            });
+        }
         next();
-    } catch (error) {
-        if (error.message === 'User not found') {
-            return res.status(401).json({
-                success: false,
-                message: 'Please authenticate',
-            });
-        } else {
-            return res.status(401).json({
-                success: false,
-                message: 'Something went wrong while validating the token',
-            });
-        }
     }
-};
+    catch (error) {
+        return res.status(401).json({
+            success: false,
+            message: 'Something went wrong while validating the token',
+        });
+    }
+}
 
 module.exports.isCandidate = async (req, res, next) => {
     try {
