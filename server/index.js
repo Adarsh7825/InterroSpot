@@ -2,6 +2,8 @@ const express = require('express');
 const { createServer } = require('http');
 const bodyParser = require('body-parser');
 const userRoutes = require('./Routes/userRoutes')
+const roomRoutes = require('./Routes/roomRoutes')
+const cookieParser = require('cookie-parser');
 const dbConnect = require('./DB/connect')
 const app = express();
 const cors = require('cors');
@@ -12,6 +14,9 @@ const port = process.env.PORT || 8181;
 require('dotenv').config();
 
 app.use(bodyParser.json({ limit: '1mb' }))
+app.use(cookieParser());
+app.use(express.json()); // For JSON payloads
+app.use(express.urlencoded({ extended: true })); // For URL-encoded payloads
 
 const io = new Server(httpserver, {
     cors: {
@@ -29,6 +34,7 @@ initSocketIo(io, connection);
 app.use(cors());
 app.use(express.json());
 app.use("/api/v1/auth", userRoutes);
+app.use('/api/v1', roomRoutes);
 httpserver.listen(port, () => {
     console.log("Server started on port 8181");
 })

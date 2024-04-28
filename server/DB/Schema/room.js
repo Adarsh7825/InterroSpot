@@ -1,32 +1,37 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
-const RoomSchema = new Schema({
+const roomSchema = new Schema({
     name: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        immutable: true,
     },
     roomid: {
         type: String,
         required: true,
-        unique: true,
+        trim: true,
         immutable: true
     },
-    owner: {
-        type: Schema.Types.ObjectId,
-        ref: "User"
-    },
-
     code: {
         type: String,
-        default: ""
+        required: true,
     },
     language: {
         type: String,
-        default: "plaintext"
+        require: true,
+        default: 'javascript'
     },
-}, { timestamps: true });
+    owner: {
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'user',
+        immutable: true
+    }
+}, {
+    timestamps: true
+});
 
 
 roomSchema.methods.toJSON = function () {
@@ -37,4 +42,6 @@ roomSchema.methods.toJSON = function () {
     return obj;
 }
 
-RoomSchema = mongoose.model("Room", RoomSchema);
+const room = mongoose.model('room', roomSchema);
+
+module.exports = room;
