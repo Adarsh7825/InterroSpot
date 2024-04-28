@@ -1,7 +1,10 @@
 const express = require('express');
-const codeRouter = new express.Router();
-const url = require('./../utils/constants/appConstants')
-const validateCode = require('./../utils/validators/codeValidator')
-const codeController = require('./../')
+const validateCode = require('../middleware/validateCode');
+const codeController = require('../controllers/codeController');
 
-codeRouter.post(url.CODE.EXECUTE, validateCode, codeController.EXECUTE)
+const codeRouter = new express.Router();
+
+// Ensure the URL and middleware/controller are correctly referenced
+codeRouter.post('/execute-code', validateCode, codeController.execute);
+
+module.exports = codeRouter;
