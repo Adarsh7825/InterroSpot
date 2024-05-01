@@ -3,7 +3,7 @@ import { Link, matchPath, useLocation } from 'react-router-dom'
 
 import { NavbarLinks } from "../../data/navbar-links"
 import InterroSpot from '../../assets/Logo/Logo-Full-Light.png'
-
+import { AiOutlineShoppingCart } from 'react-icons/ai'
 import { MdKeyboardArrowDown } from "react-icons/md"
 
 
@@ -108,7 +108,34 @@ const Navbar = () => {
                         ))}
                 </ul>
 
+                {/* Login and Signup Button */}
 
+                <div className='flex gap-x-4 items-center'>
+
+                    {
+                        (
+                            <Link to="/login">
+                                <button className={` px-[12px] py-[8px] text-richblack-100 rounded-md 
+                                 ${matchRoute('/login') ? 'border-[2.5px] border-yellow-50' : 'border border-richblack-700 bg-richblack-800'} `}
+                                >
+                                    Log in
+                                </button>
+                            </Link>
+                        )
+                    }
+                    {
+                        (
+                            <Link to="/signup">
+
+                                <button className={` px-[12px] py-[8px] text-richblack-100 rounded-md 
+                                 ${matchRoute('/signup') ? 'border-[2.5px] border-yellow-50' : 'border border-richblack-700 bg-richblack-800'} `}
+                                >
+                                    Sign Up
+                                </button>
+                            </Link>
+                        )
+                    }
+                </div>
             </div>
         </nav>
     )
