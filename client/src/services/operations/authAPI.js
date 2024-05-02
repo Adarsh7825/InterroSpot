@@ -126,3 +126,49 @@ export function logout(navigate) {
     }
 }
 
+export function getPasswordResetToken(email, setEmailSent) {
+    return async (dispatch) => {
+        const toastId = toast.loading("Loading....");
+        dispatch(setLoading(true));
+        try {
+            const response = await apiConnector("POST", RESETPASSTOKEN_API, { email });
+            console.log("RESETPASSTOKEN API RESPONSE........", response);
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message);
+            }
+
+            toast.success("Reset Email sent");
+            setEmailSent(true);
+        } catch (error) {
+            console.log("RESETPASSTOKEN API ERROR........", error);
+            toast.error("could not send reset email");
+        }
+        dispatch(setLoading(false));
+    }
+}
+
+export function resetPassword(password, confirmPassword, token, navigate) {
+    return async (dispatch) => {
+        const toastId = toast.loading("Loading....");
+        dispatch(setLoading(true));
+        try {
+            const response = await apiConnector("POST", RESETPASSWORD_API, {
+                password,
+                confirmPassword,
+                token,
+            });
+            console.log("RESETPASSWORD API RESPONSE........", response);
+            if (!response?.data?.success) {
+                throw new Error(response?.data?.message);
+            }
+
+            toast.success("Password reset successful");
+            navigate("/login");
+        } catch (error) {
+            console.log("RESETPASSWORD API ERROR........", error);
+            toast.error("could not reset password");
+        }
+        dispatch(setLoading(false));
+        toast.dismiss(toastId);
+    }
+}
