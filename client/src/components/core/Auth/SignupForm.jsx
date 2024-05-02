@@ -1,12 +1,12 @@
 import React from 'react'
-import { ACCOUNT_TYPE } from '../../../../utils/constants'
+import { ACCOUNT_TYPE } from '../../../utils/constants'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { setSignupData } from '../../../../slices/authSlice'
-import Tab from '../../../common/Tab'
+import { setSignupData } from '../../../slices/authSlice'
+import Tab from '../../common/Tab'
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'
 import { useState } from 'react'
-import { sendOtp } from '../../../../services/operations/authAPI'
+import { sendOtp } from '../../../services/operations/authAPI'
 
 function SignupForm() {
     const navigate = useNavigate()

@@ -97,7 +97,7 @@ const Home = () => {
                         <HighlightText text={"Bandwidth"} />
                     </motion.div>
                     <motion.div>
-                        <input type="text" placeholder="Search Profile" class="w-96 h-10 mt-4 rounded-full border-none bg-richblack-800 text-white text-center placeholder-center" />
+                        <input type="text" placeholder="Search Profile" className="w-96 h-10 mt-4 rounded-full border-none bg-richblack-800 text-white text-center placeholder-center" />
                     </motion.div>
                     <motion.div
                         variants={fadeIn('right', 0.1)}
