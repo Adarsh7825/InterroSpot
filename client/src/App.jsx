@@ -7,6 +7,7 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import VerifyEmail from './pages/VerifyEmail';
 import Error from './pages/Error';
+import MyProfile from './components/core/Dashboard/MyProfile';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="signup" element={<Signup />} />
           <Route path="login" element={<Login />} />
           <Route path='verify-email' element={<VerifyEmail />} />
+          <Route path="dashboard/my-profile" element={<MyProfile />} />
           <Route path='*' element={<Error />} />
         </Routes>
       </div>
