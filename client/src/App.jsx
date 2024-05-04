@@ -21,7 +21,7 @@ function App() {
           <Route path="signup" element={<Signup />} />
           <Route path="login" element={<Login />} />
           <Route path='verify-email' element={<VerifyEmail />} />
-          <Route path="dashboard/my-profile" element={<MyProfile />} />
+          <Route path="dashboard/my-profile" element={<PrivateRoute><MyProfile /></PrivateRoute>} />
           <Route element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path='*' element={<Error />} />
         </Routes>
