@@ -3,14 +3,15 @@ import { Link, matchPath, useLocation } from 'react-router-dom'
 
 import { NavbarLinks } from "../../data/navbar-links"
 import InterroSpot from '../../assets/Logo/Logo-Full-Light.png'
-import { AiOutlineShoppingCart } from 'react-icons/ai'
 import { MdKeyboardArrowDown } from "react-icons/md"
+import { useSelector } from 'react-redux'
+import ProfileDropdown from '../core/Auth/ProfileDropDown'
+import MobileProfileDropDown from '../core/Auth/MobileProfileDropDown'
 
 
 const Navbar = () => {
-
     const location = useLocation();
-
+    const { token } = useSelector((state) => state.auth);
     const [subLinks, setSubLinks] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -113,7 +114,7 @@ const Navbar = () => {
                 <div className='flex gap-x-4 items-center'>
 
                     {
-                        (
+                        token === null && (
                             <Link to="/login">
                                 <button className={` px-[12px] py-[8px] text-richblack-100 rounded-md 
                                  ${matchRoute('/login') ? 'border-[2.5px] border-yellow-50' : 'border border-richblack-700 bg-richblack-800'} `}
@@ -124,7 +125,7 @@ const Navbar = () => {
                         )
                     }
                     {
-                        (
+                        token === null && (
                             <Link to="/signup">
 
                                 <button className={` px-[12px] py-[8px] text-richblack-100 rounded-md 
@@ -135,6 +136,12 @@ const Navbar = () => {
                             </Link>
                         )
                     }
+
+                    {/* For Large device */}
+                    {token !== null && <ProfileDropdown />}
+
+                    {/* For small devices */}
+                    {token !== null && <MobileProfileDropDown />}
                 </div>
             </div>
         </nav>
