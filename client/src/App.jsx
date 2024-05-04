@@ -8,6 +8,8 @@ import Login from './pages/Login';
 import VerifyEmail from './pages/VerifyEmail';
 import Error from './pages/Error';
 import MyProfile from './components/core/Dashboard/MyProfile';
+import PrivateRoute from './components/core/Auth/PrivateRoute';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
@@ -20,6 +22,7 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path='verify-email' element={<VerifyEmail />} />
           <Route path="dashboard/my-profile" element={<MyProfile />} />
+          <Route element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path='*' element={<Error />} />
         </Routes>
       </div>
