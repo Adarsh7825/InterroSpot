@@ -10,6 +10,7 @@ import Error from './pages/Error';
 import MyProfile from './components/core/Dashboard/MyProfile';
 import PrivateRoute from './components/core/Auth/PrivateRoute';
 import Dashboard from './pages/Dashboard';
+import Settings from './components/core/Dashboard/Settings';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path='verify-email' element={<VerifyEmail />} />
           <Route path="dashboard/my-profile" element={<PrivateRoute><MyProfile /></PrivateRoute>} />
           <Route element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="dashboard/Settings" element={<Settings />} />
           <Route path='*' element={<Error />} />
         </Routes>
       </div>
