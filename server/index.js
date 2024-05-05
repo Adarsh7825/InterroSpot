@@ -40,8 +40,8 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/v1/auth", userRoutes);
 app.use('/api/v1/profile', porfileRoutes);
-app.use('/api/v1', roomRoutes);
-app.use('/api/v1', codeRoutes);
+app.use('/api/v1/rooms', roomRoutes);
+app.use('/api/v1/code', codeRoutes);
 httpserver.listen(port, () => {
     console.log("Server started on port 8181");
 })

@@ -1,15 +1,13 @@
 // In your roomRoutes.js file
 const express = require('express');
 const roomRouter = new express.Router();
-const { auth } = require('../middleware/auth'); // Destructure if exported as an object
+const { auth, isAdmin, isCandidate, isInterviewer, isRecruiter } = require('../middleware/auth');
 const roomData = require('../middleware/roomData');
-const url = require('../utils/constants/appConstants');
-const roomCtrl = require('../controllers/roomCtrl');
-
+const { createRoom, deleteRoom, fetch, updateRoom } = require('../controllers/roomCtrl')
 // Use the middleware
-roomRouter.post(url.ROOMS.CREATE, auth, roomData, roomCtrl.createRoom);
-roomRouter.get(url.ROOMS.FETCH, auth, roomCtrl.fetch);
-roomRouter.patch(url.ROOMS.UPDATE, auth, roomCtrl.updateRoom);
-roomRouter.delete(url.ROOMS.DELETE, auth, roomCtrl.deleteRoom);
+roomRouter.post('/create', auth, isAdmin, isInterviewer, isRecruiter, roomData, createRoom);
+roomRouter.get('/fetch', auth, isAdmin, isInterviewer, isRecruiter, fetch);
+roomRouter.patch('/update', auth, isAdmin, isInterviewer, isRecruiter, updateRoom);
+roomRouter.delete('/update', auth, isAdmin, isInterviewer, isRecruiter, deleteRoom);
 
 module.exports = roomRouter;
