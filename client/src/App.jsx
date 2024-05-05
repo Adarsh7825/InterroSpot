@@ -11,6 +11,8 @@ import MyProfile from './components/core/Dashboard/MyProfile';
 import PrivateRoute from './components/core/Auth/PrivateRoute';
 import Dashboard from './pages/Dashboard';
 import Settings from './components/core/Dashboard/Settings';
+import About from './pages/About';
+import Contact from './pages/Contact';
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
           <Route path="signup" element={<Signup />} />
           <Route path="login" element={<Login />} />
           <Route path='verify-email' element={<VerifyEmail />} />
+          <Route path='/about' element={<About />} />
+          <Route path='/contact' element={<Contact />} />
           <Route path="dashboard/my-profile" element={<PrivateRoute><MyProfile /></PrivateRoute>} />
           <Route element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="dashboard/Settings" element={<Settings />} />
