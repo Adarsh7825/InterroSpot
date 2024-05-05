@@ -7,6 +7,9 @@ exports.createRoom = async (req, res) => {
         const room = new Room(req.room);
         await room.save();
         const user = await User.findById(req.user._id);
+        if (!user) {
+            throw new Error('User not found');
+        }
         user.rooms.push(room._id);
         await user.save();
         return res.status(200).send({
@@ -14,11 +17,12 @@ exports.createRoom = async (req, res) => {
             message: 'Room created successfully'
         });
     } catch (error) {
-        console.log('error in create room');
-        return res.status(500).send({ error: error });
+        console.error('error in create room', error);
+        return res.status(500).send({
+            error: error.message || 'An unknown error occurred'
+        });
     }
 };
-
 // Method for fetching a room
 exports.fetch = async (req, res) => {
     try {
