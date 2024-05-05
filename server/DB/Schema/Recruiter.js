@@ -10,6 +10,21 @@ const RecruiterSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'JobPosition'
     }],
+    candidates: [{
+        email: {
+            type: String,
+            required: true,
+        },
+        name: {
+            type: String,
+            required: true,
+        },
+        phone: {
+            type: String,
+            required: true,
+        },
+    }],
+
 }, { timestamps: true });
 
 module.exports = mongoose.model("Recruiter", RecruiterSchema);

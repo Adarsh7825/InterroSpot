@@ -1,6 +1,6 @@
 const Profile = require('../DB/Schema/Profile')
 const { uploadImageToCloudinary } = require("../utils/imageUploader");
-const User = require('../DB/Schema/User');
+const User = require('../DB/Schema/user');
 
 
 // Method for updating a profile

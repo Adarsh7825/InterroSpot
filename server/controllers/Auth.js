@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const User = require('../DB/Schema/User');
+const User = require('../DB/Schema/user');
 const OTP = require('../DB/Schema/OTP');
 const jwt = require('jsonwebtoken');
 const otpGenerator = require('otp-generator');

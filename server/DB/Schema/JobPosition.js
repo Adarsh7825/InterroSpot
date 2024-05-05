@@ -8,7 +8,6 @@ const JobPositionSchema = new Schema({
     },
     category: {
         type: String,
-        enum: ['frontend', 'backend', 'devops', 'desktop_engineer', 'react_developer'],
         required: true,
     },
     description: {
