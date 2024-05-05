@@ -4,10 +4,12 @@ const bodyParser = require('body-parser');
 const userRoutes = require('./Routes/userRoutes')
 const roomRoutes = require('./Routes/roomRoutes')
 const codeRoutes = require('./Routes/codeRoutes')
+const porfileRoutes = require('./Routes/profileRoutes')
 const cookieParser = require('cookie-parser');
 const dbConnect = require('./DB/connect')
 const app = express();
 const cors = require('cors');
+const { cloudinaryConnect } = require('./config/cloudinary');
 const { Server } = require('socket.io');
 const httpserver = createServer(app);
 const initSocketIo = require('./initSocket')
@@ -32,9 +34,12 @@ const connection = {
 }
 initSocketIo(io, connection);
 
+cloudinaryConnect();
+
 app.use(cors());
 app.use(express.json());
 app.use("/api/v1/auth", userRoutes);
+app.use('/api/v1/profile', porfileRoutes);
 app.use('/api/v1', roomRoutes);
 app.use('/api/v1', codeRoutes);
 httpserver.listen(port, () => {
