@@ -7,8 +7,8 @@ const RecruiterSchema = new Schema({
         required: true,
     },
     jobPositions: [{
-        type: Schema.Types.ObjectId,
-        ref: 'JobPosition'
+        type: String,
+        required: true,
     }],
     candidates: [{
         email: {

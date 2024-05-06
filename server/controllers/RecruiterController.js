@@ -29,21 +29,28 @@ exports.createInterview = async (req, res) => {
 };
 
 // Send notification to a candidate
+// Send notification to multiple candidates
 exports.notifyCandidate = async (req, res) => {
     try {
-        const { email, message } = req.body;
+        const { candidates, message } = req.body; // Assuming candidates is an array and message is the common message to send
 
-        await mailSender(email, "Notification from Recruiter", message);
+        const emailData = candidates.map(candidate => ({
+            email: candidate.email, // Assuming each candidate object has an email property
+            subject: "Notification from Recruiter",
+            body: message,
+        }));
+
+        await mailSender(emailData);
 
         return res.json({
             success: true,
-            message: 'Email sent successfully to candidate',
+            message: 'Emails sent successfully to candidates',
         });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             success: false,
-            message: 'Something went wrong while sending email to candidate',
+            message: 'Something went wrong while sending emails to candidates',
         });
     }
 };
