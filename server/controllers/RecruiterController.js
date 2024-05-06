@@ -1,5 +1,5 @@
 const Recruiter = require("../DB/Schema/Recruiter");
-const mailSender = require("../utils/mailSender");
+const mailSender = require("../utils/mailSenderForAllCandidate");
 
 // Create a new recruiter
 exports.createInterview = async (req, res) => {
