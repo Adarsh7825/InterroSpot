@@ -12,7 +12,7 @@ const mailSender = async (email, subject, body) => {
 
 
         let info = await transporter?.sendMail({
-            from: 'InteractIView Interview ',
+            from: 'InterroSpot',
             to: `${email}`,
             subject: `${subject}`,
             html: `${body}`,
