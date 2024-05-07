@@ -57,6 +57,17 @@ const UserSchema = new Schema({
         default: "candidate",
         enum: ["candidate", "interviewer", "recruiter", "admin",],
     },
+    expertiseAreas: [{
+        type: String,
+    }],
+    jobPreferences: [{
+        type: String,
+    }],
+    availability: [{
+        day: String,
+        start: String,
+        end: String,
+    }],
     editor: {
         language: {
             type: String,
@@ -84,96 +95,6 @@ const UserSchema = new Schema({
             default: "monospace",
             enum: ["monospace", "sans-serif", "serif"]
         },
-        autoIndent: {
-            type: Boolean,
-            default: true,
-        },
-        formatOnSave: {
-            type: Boolean,
-            default: true,
-        },
-        wordwrap: {
-            type: Boolean,
-            default: true,
-        },
-        minimap: {
-            type: Boolean,
-            default: true,
-        },
-        tabSize: {
-            type: Number,
-            default: 4,
-            min: 2,
-            max: 8
-        },
-        lineNumbers: {
-            type: Boolean,
-            default: true,
-        },
-        lineHighlight: {
-            type: Boolean,
-            default: true,
-        },
-        lineWrap: {
-            type: Boolean,
-            default: true,
-        },
-        autoCloseBrackets: {
-            type: Boolean,
-            default: true,
-        },
-        autoCloseTags: {
-            type: Boolean,
-            default: true,
-        },
-        autoCloseQuotes: {
-            type: Boolean,
-            default: true,
-        },
-        autoCloseBraces: {
-            type: Boolean,
-            default: true,
-        },
-        autoCloseParentheses: {
-            type: Boolean,
-            default: true,
-        },
-        showFolding: {
-            type: Boolean,
-            default: true,
-        },
-        highlightActiveIndentGuide: {
-            type: Boolean,
-            default: true,
-        },
-        highlightSelectedWord: {
-            type: Boolean,
-            default: true,
-        },
-        highlightLine: {
-            type: Boolean,
-            default: true,
-        },
-        highlightGutterLine: {
-            type: Boolean,
-            default: true,
-        },
-        highlightBracketPair: {
-            type: Boolean,
-            default: true,
-        },
-        highlightTags: {
-            type: Boolean,
-            default: true,
-        },
-        highlightModifications: {
-            type: Boolean,
-            default: true,
-        },
-        highlightCurrentLine: {
-            type: Boolean,
-            default: true,
-        },
     },
     rooms: [{
         type: Schema.Types.ObjectId,
@@ -181,44 +102,6 @@ const UserSchema = new Schema({
     }]
 }, { timestamps: true });
 
-// UserSchema.methods.toJSON = function () {
-//     let obj = this.toObject();
-//     delete obj.createdAt;
-//     delete obj.updatedAt;
-//     delete obj.__v;
-//     if (obj.password) delete obj.password;
-//     return obj;
-// };
-
-// UserSchema.method.generateAuthToken = async function () {
-//     const user = this
-//     const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET, { expiresIn: '7 day' })
-//     return token
-// };
-
-// UserSchema.statics.findByCredentials = async (email, password) => {
-//     const user = await User.findOne({ email })
-//     if (!user) throw new Error('Wrong email or password')
-//     const isMatch = await bcrypt.compare(password, user.password)
-//     if (!isMatch) throw new Error('wrong email or password')
-//     return user
-// };
-
-// userSchema.pre('save', async function (next) {
-//     const user = this;
-//     if (user.password) {
-//         if (user.isModified('password')) {
-//             user.password = await bcrypt.hash(user.password, 9)
-//         }
-//     }
-//     next()
-// })
-
-// userSchema.pre('remove', async function (next) {
-//     const user = this
-//     await Room.deleteMany({ owner: user._id })
-//     next()
-// })   
 
 const modelName = 'User';
 

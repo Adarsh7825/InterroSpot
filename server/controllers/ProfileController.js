@@ -2,11 +2,10 @@ const Profile = require('../DB/Schema/Profile')
 const { uploadImageToCloudinary } = require("../utils/imageUploader");
 const User = require('../DB/Schema/user');
 
-
 // Method for updating a profile
 exports.updateProfile = async (req, res) => {
     try {
-        const { dateOfBirth = "", about = "", contactNumber } = req.body;
+        const { dateOfBirth = "", about = "", contactNumber, expertiseAreas = [], jobPreferences = [], availability = [] } = req.body;
         const id = req?.user.id;
 
         // Find the profile by id
@@ -21,10 +20,23 @@ exports.updateProfile = async (req, res) => {
         // Save the updated profile
         await profile?.save();
 
+        // Now update the User model with expertiseAreas, jobPreferences, and availability
+        userDetails.expertiseAreas = expertiseAreas;
+        userDetails.jobPreferences = jobPreferences;
+        userDetails.availability = availability.map(avail => ({
+            day: avail.day,
+            start: avail.start,
+            end: avail.end,
+        }));
+
+        // Save the updated user details
+        await userDetails.save();
+
         return res.json({
             success: true,
-            message: "Profile updated successfully",
-            profile,
+            message: "Profile and user details updated successfully",
+            profile: profile,
+            userDetails: userDetails,
         });
     } catch (error) {
         console.log(error);

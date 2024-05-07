@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const InterviewSessionSchema = new mongoose.Schema({
     candidate: {
         type: mongoose.Schema.Types.ObjectId,

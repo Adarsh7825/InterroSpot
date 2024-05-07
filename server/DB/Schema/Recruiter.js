@@ -7,8 +7,20 @@ const RecruiterSchema = new Schema({
         required: true,
     },
     jobPositions: [{
-        type: String,
-        required: true,
+        title: {
+            type: String,
+            required: true,
+        },
+        category: {
+            type: String,
+            enum: ['frontend', 'backend', 'devops', 'desktop_engineer', 'react_developer'],
+            required: true,
+        },
+        description: {
+            type: String,
+            required: true,
+        },
+        requiredSkills: [String],
     }],
     candidates: [{
         email: {

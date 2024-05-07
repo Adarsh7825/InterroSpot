@@ -14,7 +14,7 @@ exports.createInterview = async (req, res) => {
 
         await newInterview.save();
 
-        return res.status(201).json({
+        return res.status(200).json({
             success: true,
             message: 'Recruiter created successfully',
             data: newInterview,
@@ -23,7 +23,7 @@ exports.createInterview = async (req, res) => {
         console.log(error);
         return res.status(500).json({
             success: false,
-            message: 'Something went wrong while creating the recruiter',
+            message: 'Something went wrong while creating the interview',
         });
     }
 };
