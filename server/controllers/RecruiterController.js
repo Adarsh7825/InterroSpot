@@ -81,14 +81,25 @@ exports.createInterviewAndSession = async (jobPositionId, candidates) => {
         if (!jobPosition) {
             throw new Error('Job position not found or invalid jobPositionId');
         }
-        const interviewers = await User.find({
+        let interviewers = await User.find({
             expertiseAreas: { $in: jobPosition.category },
             accountType: 'interviewer',
         });
 
+        // Check if there are enough interviewers
+        if (interviewers.length === 0) {
+            throw new Error('No interviewers found with the required expertise');
+        }
+
+        // Convert interviewers list to a queue for round-robin allocation
+        let interviewerQueue = interviewers.slice(); // Clone the array
+
         for (const candidate of candidates) {
             let sessionCreated = false;
-            for (const interviewer of interviewers) {
+            let attempts = interviewerQueue.length; // Prevent infinite loop
+
+            while (!sessionCreated && attempts > 0) {
+                const interviewer = interviewerQueue.shift(); // Get the first interviewer
                 if (checkAvailabilityOverlap(candidate.availability, interviewer.availability)) {
                     const session = new InterviewSession({
                         candidate: candidate._id,
@@ -115,9 +126,9 @@ exports.createInterviewAndSession = async (jobPositionId, candidates) => {
                             body: `You have to take the interview of ${candidate.name}. Please join using this link: ${sessionLink}`,
                         }
                     ]);
-
-                    break;
                 }
+                interviewerQueue.push(interviewer); // Place the interviewer at the back of the queue
+                attempts--;
             }
 
             if (!sessionCreated) {
@@ -131,3 +142,66 @@ exports.createInterviewAndSession = async (jobPositionId, candidates) => {
         return { success: false, message: 'Something went wrong while creating interview sessions', error: error.toString() };
     }
 };
+// exports.createInterviewAndSession = async (jobPositionId, candidates) => {
+//     try {
+//         console.log(`this is job Position id ${jobPositionId}`);
+//         console.log(`this is candidate id ${candidates.map(c => c._id)}`);
+//         console.log(`Candidates: ${JSON.stringify(candidates)}`);
+//         const recruiter = await Recruiter.findOne({ "jobPositions._id": jobPositionId });
+//         if (!recruiter) {
+//             throw new Error('Job position not found');
+//         }
+//         const jobPosition = recruiter.jobPositions.find(position => position._id.toString() === jobPositionId.toString());
+//         if (!jobPosition) {
+//             throw new Error('Job position not found or invalid jobPositionId');
+//         }
+//         const interviewers = await User.find({
+//             expertiseAreas: { $in: jobPosition.category },
+//             accountType: 'interviewer',
+//         });
+
+//         for (const candidate of candidates) {
+//             let sessionCreated = false;
+//             for (const interviewer of interviewers) {
+//                 if (checkAvailabilityOverlap(candidate.availability, interviewer.availability)) {
+//                     const session = new InterviewSession({
+//                         candidate: candidate._id,
+//                         interviewer: interviewer._id,
+//                         questions: []
+//                     });
+
+//                     await session.save();
+//                     console.log(`Interview session created successfully for candidate: ${candidate._id}`);
+//                     console.log(`Interview session created successfully for interviewer: ${interviewer.email}`);
+//                     sessionCreated = true;
+
+//                     const sessionLink = `http://example.com/session/${session._id}`;
+
+//                     await mailSender([
+//                         {
+//                             email: candidate.email,
+//                             subject: "Notification from InterroSpot Regarding Interview Schedule",
+//                             body: `Your interview is scheduled. Please join using this link: ${sessionLink}`,
+//                         },
+//                         {
+//                             email: interviewer.email,
+//                             subject: "Notification from InterroSpot Regarding Interview Schedule",
+//                             body: `You have to take the interview of ${candidate.name}. Please join using this link: ${sessionLink}`,
+//                         }
+//                     ]);
+
+//                     break;
+//                 }
+//             }
+
+//             if (!sessionCreated) {
+//                 console.log(`No available interviewer found for candidate: ${candidate._id}`);
+//             }
+//         }
+
+//         return { success: true, message: 'Interview sessions created successfully for available matches' };
+//     } catch (error) {
+//         console.error('Error creating interview sessions:', error);
+//         return { success: false, message: 'Something went wrong while creating interview sessions', error: error.toString() };
+//     }
+// };
