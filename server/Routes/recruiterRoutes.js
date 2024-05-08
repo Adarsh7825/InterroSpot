@@ -5,7 +5,8 @@ const { createInterview, notifyCandidate } = require('../controllers/RecruiterCo
 const { auth, isAdmin, isCandidate, isInterviewer, isRecruiter } = require('../middleware/auth');
 const { createInterviewAndSession } = require('../controllers/InterviewSessionCtrl');
 
-router.post('/create-interview', auth, createInterviewAndSession);
+router.post('/create-interview', auth, createInterview);
+// router.post('/create-interviewsession', auth, createInterviewAndSession);
 router.post('/notify-candidate', auth, notifyCandidate);
 
 module.exports = router;
