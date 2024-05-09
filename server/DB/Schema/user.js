@@ -31,9 +31,9 @@ const UserSchema = new Schema({
         default: true,
     },
     additionalDetails: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: "Profile",
+        type: String,
+        // required: true,
+        // ref: "Profile",
     },
     token: {
         type: String,

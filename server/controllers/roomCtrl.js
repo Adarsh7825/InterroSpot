@@ -1,20 +1,24 @@
 const Room = require('../DB/Schema/room');
 const User = require('../DB/Schema/user');
 
+const baseURL = 'http://localhost:5173';
+
 // Method for creating a room
 exports.createRoom = async (req, res) => {
     try {
         const room = new Room(req.room);
         await room.save();
-        const user = await User.findById(req.user._id);
+        const user = await User.findById(req?.user._id);
         if (!user) {
             throw new Error('User not found');
         }
         user.rooms.push(room._id);
         await user.save();
+        const roomLink = baseURL + room.roomid;
         return res.status(200).send({
             room,
-            message: 'Room created successfully'
+            message: 'Room created successfully',
+            link: roomLink
         });
     } catch (error) {
         console.error('error in create room', error);

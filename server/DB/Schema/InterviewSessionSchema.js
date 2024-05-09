@@ -28,6 +28,11 @@ const InterviewSessionSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    roomId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'room',
+        required: true,
+    },
 });
 
 module.exports = mongoose.model("InterviewSession", InterviewSessionSchema);
