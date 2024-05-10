@@ -20,3 +20,6 @@ export const settingsEndpoints = {
     DELETE_PROFILE_API: BASE_URL + "/profile/deleteProfile",
 }
 
+export const recruiterEndpoints = {
+    CREATE_INTERVIEW_API: BASE_URL + "/recruiter/create-interview"
+}
