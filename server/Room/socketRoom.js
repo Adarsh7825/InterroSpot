@@ -40,9 +40,9 @@ function removeRoomUser(roomid, userId) {
             return true;
         });
     }
-    if (room[roomid].users.length === 0) {
-        deleteRoom(roomid);
-    }
+    // if (room[roomid].users.length === 0) {
+    //     deleteRoom(roomid);
+    // }
     return userName;
 }
 
