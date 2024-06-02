@@ -17,8 +17,6 @@ import { useSelector } from 'react-redux';
 import { ACCOUNT_TYPE } from './utils/constants'
 import CreateInteviewByRecruiter from './components/core/Dashboard/RecruiterDashboard/CreateInteviewByRecruiter';
 import DataContextProvider from './context/DataContext';
-import RoomData from './components/core/Room/RoomData';
-import Room from './components/core/Room/Room';
 
 function App() {
   const { user } = useSelector((state) => state.profile)
@@ -45,8 +43,8 @@ function App() {
               )
             }
             <Route path="dashboard/Settings" element={<Settings />} />
-            <Route path="/rooms/:roomId" element={<RoomData />} />
-            <Route path='/room' element={<Room />} />
+            {/* <Route path="/rooms/:roomId" element={<RoomData />} />
+            <Route path='/room' element={<Room />} /> */}
             <Route path='*' element={<Error />} />
           </Routes>
         </div>
