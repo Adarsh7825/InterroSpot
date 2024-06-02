@@ -13,38 +13,45 @@ import Dashboard from './pages/Dashboard';
 import Settings from './components/core/Dashboard/Settings';
 import About from './pages/About';
 import Contact from './pages/Contact';
-import { useSelector } from 'react-redux'; // Corrected here
+import { useSelector } from 'react-redux';
 import { ACCOUNT_TYPE } from './utils/constants'
 import CreateInteviewByRecruiter from './components/core/Dashboard/RecruiterDashboard/CreateInteviewByRecruiter';
+import DataContextProvider from './context/DataContext';
+import RoomData from './components/core/Room/RoomData';
+import Room from './components/core/Room/Room';
 
 function App() {
   const { user } = useSelector((state) => state.profile)
   console.log(user)
   return (
-    <Router>
-      <div className="w-screen min-h-screen bg-richblack-900 flex flex-col font-inter">
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="signup" element={<Signup />} />
-          <Route path="login" element={<Login />} />
-          <Route path='verify-email' element={<VerifyEmail />} />
-          <Route path='/about' element={<About />} />
-          <Route path='/contact' element={<Contact />} />
-          <Route path="dashboard/my-profile" element={<PrivateRoute><MyProfile /></PrivateRoute>} />
-          <Route element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-          {
-            user?.accountType === ACCOUNT_TYPE.RECRUITER && (
-              <>
-                <Route path="dashboard/form" element={<CreateInteviewByRecruiter />} />
-              </>
-            )
-          }
-          <Route path="dashboard/Settings" element={<Settings />} />
-          <Route path='*' element={<Error />} />
-        </Routes>
-      </div>
-    </Router>
+    <DataContextProvider>
+      <Router>
+        <div className="w-screen min-h-screen bg-richblack-900 flex flex-col font-inter">
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="signup" element={<Signup />} />
+            <Route path="login" element={<Login />} />
+            <Route path='verify-email' element={<VerifyEmail />} />
+            <Route path='/about' element={<About />} />
+            <Route path='/contact' element={<Contact />} />
+            <Route path="/dashboard/my-profile" element={<PrivateRoute><MyProfile /></PrivateRoute>} />
+            <Route element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+            {
+              user?.accountType === ACCOUNT_TYPE.RECRUITER && (
+                <>
+                  <Route path="dashboard/form" element={<CreateInteviewByRecruiter />} />
+                </>
+              )
+            }
+            <Route path="dashboard/Settings" element={<Settings />} />
+            <Route path="/rooms/:roomId" element={<RoomData />} />
+            <Route path='/room' element={<Room />} />
+            <Route path='*' element={<Error />} />
+          </Routes>
+        </div>
+      </Router>
+    </DataContextProvider>
   );
 }
 

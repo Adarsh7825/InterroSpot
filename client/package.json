@@ -10,11 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mui/icons-material": "^5.15.19",
+    "@mui/material": "^5.15.19",
     "@reduxjs/toolkit": "^2.2.3",
+    "ace-builds": "^1.34.2",
     "axios": "^1.6.8",
     "framer-motion": "^11.1.7",
     "papaparse": "^5.4.1",
+    "peerjs": "^1.5.3",
     "react": "^18.2.0",
+    "react-ace": "^11.0.1",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.4",
     "react-hot-toast": "^2.4.1",
@@ -26,6 +31,7 @@
     "react-router-dom": "^6.23.0",
     "react-toastify": "^10.0.5",
     "react-type-animation": "^3.2.0",
+    "socket.io-client": "^4.7.5",
     "swiper": "^11.1.1"
   },
   "devDependencies": {
