@@ -16,6 +16,7 @@
     "ace-builds": "^1.34.2",
     "axios": "^1.6.8",
     "framer-motion": "^11.1.7",
+    "generate-avatar": "^1.4.10",
     "papaparse": "^5.4.1",
     "peerjs": "^1.5.3",
     "react": "^18.2.0",

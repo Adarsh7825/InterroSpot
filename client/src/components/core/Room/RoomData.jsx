@@ -1,0 +1,167 @@
+import React, { useContext, useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { DataContext } from '../../../context/DataContext';
+import { apiConnector } from '../../../services/apiconnector';
+import { generateFromString } from 'generate-avatar';
+
+const RoomData = () => {
+    const { setCurrRoom, setUser } = useContext(DataContext);
+    const [isLoading, setIsLoading] = useState(false);
+    const { user } = useSelector((state) => state.profile);
+    const { roomId } = useParams();
+    const navigate = useNavigate();
+    const REACT_APP_BACKEND_URL = 'http://localhost:8181/';
+    const token = user?.token;
+
+    function loadingStart() {
+        setIsLoading(true);
+    }
+
+    function loadingStop() {
+        setIsLoading(false);
+    }
+
+    useEffect(() => {
+        if (user?.name) {
+            toast.success(`Welcome ${user.firstName}!`, {
+                // position: toast.POSITION.TOP_RIGHT
+            });
+        }
+    }, [user?.firstName]);
+
+    useEffect(() => {
+        if (roomId) {
+            joinRoom(roomId);
+        }
+    }, [roomId]);
+
+    // const joinRoom = (roomId) => {
+    //     loadingStart();
+    //     apiConnector('get', `rooms/fetch?id=${roomId}`, null, { Authorization: `Bearer ${token}` })
+    //         .then((res) => {
+    //             setCurrRoom(res.data);
+    //             loadingStop();
+    //             navigate('/roomshappy', { state: { roomid: roomId } }); // Pass only serializable data
+    //         })
+    //         .catch((err) => {
+    //             loadingStop();
+    //             toast.error('Room not found', {
+    //                 // position: toast.POSITION.TOP_RIGHT
+    //             });
+    //             console.error(err);
+    //         });
+    // };
+
+    const joinRoom = async () => {
+        let roomID = document.getElementById('roomID').value;
+        loadingStart();
+        apiConnector('get', `rooms/fetch?id=${roomID}`, null, { Authorization: `Bearer ${token}` })
+            .then((response) => {
+                setCurrRoom(response.data);
+                loadingStop();
+                console.log(roomID);
+                navigate('/room', { state: { roomid: roomID } }); // Pass roomid as state
+            })
+            .catch((error) => {
+                loadingStop();
+                toast.error('Room not found', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+                console.log(error)
+            });
+    }
+
+
+    const copyRoomId = (e) => {
+        const id = e.target.innerText;
+        navigator.clipboard.writeText(id);
+        toast.success('Room ID Copied ', {
+            // position: toast.POSITION.TOP_RIGHT
+        });
+    };
+
+    useEffect(() => {
+
+        if (user && !user.rooms.every(room => !room.updatedAt.includes("T"))) {
+            user.rooms.forEach((item) => {
+                let temp = item.updatedAt.replace('T', ' ').split(":");
+                temp.pop();
+                item.updatedAt = temp.join(":")
+            })
+            user.rooms.sort((a, b) => {
+                return new Date(b.updatedAt) - new Date(a.updatedAt);
+            })
+
+            setUser({ ...user })
+        }
+
+        if (user) {
+            document.querySelectorAll(".join-room input").forEach(input => {
+                input.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter")
+                        e.target.nextElementSibling.click();
+                })
+            })
+        }
+
+    }, [user])
+
+
+    return (
+        <div>
+            <div className="room-data">
+                {/* <button onClick={logout} className="logOut">Logout</button> */}
+                <div className="userData" >
+                    {user.avatar ?
+                        <img src={user.avatar} height={100} alt='user profile' style={{ borderRadius: '50%', width: '5rem', height: '5rem' }} />
+                        : <img height={100} src={`data:image/svg+xml;utf8,${generateFromString(user.email + user.name)}`} alt="user profile" style={{ borderRadius: '50%', width: '5rem', height: '5rem' }} />
+                    }
+                </div>
+                <div className="join-room">
+                    <div className="room-input">
+                        <input id="roomName" placeholder="Enter Room Name" />
+                        {/* <button onClick={createRoom} >Create Room</button> */}
+                    </div>
+                    <div className="room-input">
+                        <input id="roomID" placeholder="Enter Room ID to join" />
+                        <button onClick={joinRoom} >Join Room</button>
+                    </div>
+                </div>
+                <table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th align="right">Room ID</th>
+                            <th align="right">Language</th>
+                            <th align="right">Last Used</th>
+                            <th align="right">Join Room</th>
+                            <th align="right">Delete Room</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {user.rooms.map((item, index) => (
+                            <tr key={index}>
+                                <td component="th" scope="row">{item.name}</td>
+                                <td align="right" onClick={copyRoomId}>{item.roomid}</td>
+                                <td align="right">{item.language}</td>
+                                <td align="right">{item.updatedAt}</td>
+                                <td align="right">
+                                    <button className="join-btn" onClick={() => getData(item)}>Join Room</button>
+                                </td>
+                                <td align="right">
+                                    <button className="delete-btn" onClick={deleteData(item)}>Delete Room</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+};
+
+export default RoomData;
