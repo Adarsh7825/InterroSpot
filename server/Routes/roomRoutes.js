@@ -8,6 +8,6 @@ const { createRoom, deleteRoom, fetch, updateRoom } = require('../controllers/ro
 roomRouter.post('/create', auth, roomData, createRoom);
 roomRouter.get('/fetch', auth, isAdmin, isInterviewer, isRecruiter, fetch);
 roomRouter.patch('/update', auth, isAdmin, isInterviewer, isRecruiter, updateRoom);
-roomRouter.delete('/update', auth, isAdmin, isInterviewer, isRecruiter, deleteRoom);
+roomRouter.delete('/delete', auth, isAdmin, isInterviewer, isRecruiter, deleteRoom);
 
 module.exports = roomRouter;

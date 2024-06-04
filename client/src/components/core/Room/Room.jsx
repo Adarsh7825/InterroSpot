@@ -8,6 +8,7 @@ import defaultCode from './../../../static/default_code.json';
 import axios from 'axios';
 import WhiteBoard from './WhiteBoard';
 import { useSelector } from "react-redux";
+import Ace from "./Ace";
 const dmp = new diff_match_patch();
 
 const Room = () => {
@@ -25,7 +26,6 @@ const Room = () => {
     const [running, setRunning] = useState(false);
     const EditorRef = useRef(null);
     const REACT_APP_BACKEND_URL = 'http://localhost:8181/';
-
 
     function updateRoom(patch) {
         socket.emit('update', { roomid, patch });
@@ -54,7 +54,7 @@ const Room = () => {
         socket.on('join', (msg, room) => {
             console.log("join gave me this data\n", room, "\n");
             toast(msg, {
-                position: toast.POSITION.TOP_RIGHT
+                // position: toast.POSITION.TOP_RIGHT
             });
 
             setCode(room.code);
@@ -111,86 +111,89 @@ const Room = () => {
         });
     }, [currRoom]);
 
-    if (socket.connected) {
-        {
-            socket.off('userJoin');
-            socket.on('userJoin', ({ msg, newUser }) => {
-                const arr = [];
-                arr.push(newUser);
-                for (let user of inRoomUsers) {
-                    arr.push(user);
-                }
-                setInRoomUsers(arr);
-                toast.success(msg, {
-                    position: toast.POSITION.TOP_RIGHT
-                })
-            })
-        }
-
-        {
-            socket.off('userLeft');
-            socket.on('userLeft', ({ msg, userId }) => {
-                console.log('userLeft', msg)
-
-                const arr = inRoomUsers.filter(user => user.id !== userId);
-                setInRoomUsers(arr);
-                console.log('userLeft', inRoomUsers);
-                toast.error(msg, {
-                    position: toast.POSITION.TOP_RIGHT
-                })
-            })
-        }
-
-        {
-            socket.off('update')
-            socket.on('update', ({ patch }) => {
-                code = EditorRef.current.editor.getValue();
-                let [newCode, results] = dmp.patch_apply(patch, code);
-                if (results[0] === true) {
-                    const pos = EditorRef.current.editor.getCursorPosition();
-                    let oldn = code.split('\n').length;
-                    let newn = newCode.split('\n').length;
-                    code = newCode;
-                    setCode(newCode);
-                    const newrow = pos.row + newn - oldn;
-                    if (oldn != newn) {
-                        EditorRef.current.editor.gotoLine(newrow, pos.column);
+    useEffect(() => {
+        if (socket.connected) {
+            {
+                socket.off('userJoin');
+                socket.on('userJoin', ({ msg, newUser }) => {
+                    const arr = [];
+                    arr.push(newUser);
+                    for (let user of inRoomUsers) {
+                        arr.push(user);
                     }
-                }
-                else {
-                    console.log('error applying patch')
-                    socket.emit('getRoom', { roomid })
-                }
-            })
+                    setInRoomUsers(arr);
+                    toast.success(msg, {
+                        // position: toast.POSITION.TOP_RIGHT
+                    })
+                })
+            }
 
-        }
-        {
-            socket.off('getRoom')
-            socket.on('getRoom', ({ room }) => {
-                setCode(room.code);
-                setLanguage(room.language);
-                setInput(room.input);
-                setOutput(room.output);
-            })
+            {
+                socket.off('userLeft');
+                socket.on('userLeft', ({ msg, userId }) => {
+                    console.log('userLeft', msg)
 
+                    const arr = inRoomUsers.filter(user => user.id !== userId);
+                    setInRoomUsers(arr);
+                    console.log('userLeft', inRoomUsers);
+                    toast.error(msg, {
+                        // position: toast.POSITION.TOP_RIGHT
+                    })
+                })
+            }
+
+            {
+                socket.off('update');
+                socket.on('update', ({ patch }) => {
+                    console.log('Received patch:', patch);
+                    const currentCode = EditorRef.current.editor.getValue();
+                    const [newCode, results] = dmp.patch_apply(patch, currentCode);
+                    if (results[0] === true) {
+                        const pos = EditorRef.current.editor.getCursorPosition();
+                        let oldn = currentCode.split('\n').length;
+                        let newn = newCode.split('\n').length;
+                        setCode(newCode);
+                        const newrow = pos.row + newn - oldn;
+                        if (oldn !== newn) {
+                            EditorRef.current.editor.gotoLine(newrow, pos.column);
+                        }
+                        console.log('Patch applied successfully on client. New code:', newCode);
+                    } else {
+                        console.log('Error applying patch on client');
+                        socket.emit('getRoom', { roomid });
+                    }
+                });
+
+            }
+            {
+                socket.off('getRoom');
+                socket.on('getRoom', ({ room }) => {
+                    setCode(room.code);
+                    setLanguage(room.language);
+                    setInput(room.input);
+                    setOutput(room.output);
+                    console.log('Received full room data:', room);
+                });
+
+            }
+            {
+                socket.off('updateIO')
+                socket.on('updateIO', ({ newinput, newoutput, newlanguage }) => {
+                    // update IO
+                    console.log('updateIo', newinput, newoutput, newlanguage);
+                    setLanguage(newlanguage);
+                    setInput(newinput);
+                    setOutput(newoutput);
+                })
+            }
+            {
+                socket.off('error')
+                socket.on('error', ({ error }) => {
+                    console.log('error from socket call', error)
+                })
+            }
         }
-        {
-            socket.off('updateIO')
-            socket.on('updateIO', ({ newinput, newoutput, newlanguage }) => {
-                // update IO
-                console.log('updateIo', newinput, newoutput, newlanguage);
-                setLanguage(newlanguage);
-                setInput(newinput);
-                setOutput(newoutput);
-            })
-        }
-        {
-            socket.off('error')
-            socket.on('error', ({ error }) => {
-                console.log('error from socket call', error)
-            })
-        }
-    }
+    }, [socket, roomid]);
 
     const IOEMIT = (a, b, c) => {
         socket.emit('updateIO', {
@@ -228,25 +231,94 @@ const Room = () => {
 
     if (user.rooms && user) {
         return (
-            <div className='text-white room'>
-                <button id="leave-room" className=" active" onClick={leaveRoom}>Leave Room</button>
-                <div className="users-joined">
+            <div style={{ color: 'white', display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
+                <button id="leave-room" style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '20px',
+                    fontSize: '1rem',
+                    padding: '0.5rem 0.8rem',
+                    borderRadius: '5px',
+                    transition: 'all 0.3s ease-in-out',
+                    cursor: 'pointer',
+                    zIndex: 100,
+                    backgroundColor: '#fff'
+                }} onClick={leaveRoom}>Leave Room</button>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem', gap: '2rem' }}>
                     {inRoomUsers.map((user) => (
-
-                        <div className="user-joined" key={user.id}>
-                            <img src={user.avatar} alt="" />
-                            <div className="name">{user.firstName}</div>
+                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }} key={user.id}>
+                            <img src={user.avatar} alt="" style={{ borderRadius: '50%', width: '40px', height: '40px' }} />
+                            <div style={{
+                                position: 'absolute',
+                                left: '100%',
+                                marginLeft: '0.5rem',
+                                padding: '0.25rem',
+                                backgroundColor: '#fff',
+                                color: '#000',
+                                borderRadius: '5px',
+                                opacity: 0,
+                                transition: 'opacity 0.3s ease-in-out'
+                            }}>{user.firstName}</div>
                         </div>
                     ))}
                 </div>
-
-                <div id="resize-editor">
-                    <div id="lines-resize"></div>
+                <Ace
+                    updateRoom={updateRoom}
+                    code={code}
+                    setCode={setCode}
+                    language={language}
+                    setLanguage={setLanguage}
+                    roomid={roomid}
+                    EditorRef={EditorRef}
+                    input={input}
+                    setInput={setInput}
+                    output={output}
+                    setOutput={setOutput}
+                    IOEMIT={IOEMIT}
+                    run={run}
+                    running={running}
+                />
+                <div id="resize-editor" style={{
+                    width: '15px',
+                    height: '100%',
+                    backgroundColor: 'rgb(146, 228, 255)',
+                    float: 'right',
+                    cursor: 'col-resize',
+                    transition: 'all 0.1s linear',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    boxShadow: '5px 0 10px rgba(0, 0, 0, 0.5)'
+                }}>
+                    <div id="lines-resize" style={{
+                        height: '25px',
+                        backgroundColor: 'black',
+                        width: '1px',
+                        position: 'relative'
+                    }}>
+                        <div style={{
+                            content: '""',
+                            height: '100%',
+                            width: '100%',
+                            position: 'absolute',
+                            left: '300%',
+                            top: 0,
+                            backgroundColor: 'black'
+                        }}></div>
+                        <div style={{
+                            content: '""',
+                            height: '100%',
+                            width: '100%',
+                            position: 'absolute',
+                            left: '-300%',
+                            top: 0,
+                            backgroundColor: 'black'
+                        }}></div>
+                    </div>
                 </div>
-
                 <WhiteBoard roomId={roomid} socket={socket} />
                 <ToastContainer autoClose={2000} />
-            </div >
+            </div>
         )
     }
 };

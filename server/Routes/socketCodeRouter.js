@@ -1,111 +1,103 @@
-const { addRoomUser, removeRoomUser, updateRoom, deleteRoom, updateRoomInputOutput, getRoom, createRoom } = require('../Room/socketRoom');
+const { createRoom, addRoomUser, removeRoomUser, getRoom, updateRoom, updateRoomIO, deleteRoom } = require('../Room/socketRoom');
 
 function manageRoom(socket, io) {
     const { id: socketId } = socket;
 
-    socket.on('joinRoom', async ({ roomName = 'Room X', roomid, name, code = '', language = 'javascript', input = '', output = '', avatar = '' }) => {
+    socket.on('join', async ({ roomid, name, code = '', language = 'javascript', input = '', output = '', avatar = '' }) => {
         try {
             if (!name) {
-                throw new Error("Name is required");
+                throw new Error('Invalid data');
             }
-            createRoom(roomid, roomName, code, language, input, output, avatar);
+            createRoom(roomid, code, language, input, output);
+
             addRoomUser(roomid, { id: socketId, name, avatar });
+
             await socket.join(roomid);
 
-            socket.emit('join', { msg: `Welcome to ${roomName} room`, room: getRoom(roomid) });
+            socket.emit('join', { msg: `Welcome to room`, room: getRoom(roomid) });
 
-            socket.to(roomid).emit('userJoin', { msg: `${name} joined the room`, newUser: { id: socketId, name, avatar } });
-        } catch (error) {
-            console.log("Error in joining room", error);
-            socket.emit('error', { msg: error.message });
-        }
-    });
+            socket.to(roomid).emit('userJoin', { msg: `New user joined ${name}`, newUser: { id: socketId, name, avatar } });
 
-    socket.on('leaveRoom', ({ roomid }) => {
-        try {
-            const name = removeRoomUser(roomid, socketId);
-            socket.leave(roomid);
-            io.to(roomid).emit('userLeave', { msg: `${name} left the room`, userId: socketId });
-            console.log(`${name} left the room`);
-        } catch (error) {
-            console.log("Error in leaving room", error);
+        } catch (err) {
+            console.log(err);
+            socket.emit('error', { error: err.message });
         }
     });
 
     socket.on('update', ({ roomid, patch }) => {
         try {
             updateRoom(roomid, patch);
-            socket.to(roomid).emit('update', patch);
-        } catch (error) {
-            console.log("Error in updating room", error);
+            socket.to(roomid).emit('update', { patch });
+        } catch (err) {
+            console.log(err);
+            socket.emit('error', { error: err.message });
         }
     });
 
-    socket.on('updateInputOutput', ({ roomid, input, output, language }) => {
+    socket.on('leave', ({ roomid }) => {
         try {
-            updateRoomInputOutput(roomid, input, output, language);
-            socket.to(roomid).emit('updateInputOutput', { newinput: input, newoutput: output, newlanguage: language });
-        } catch (error) {
-            console.log(error);
-        }
-    });
-    socket.on('disconnect', () => {
-        console.log("User disconnected", socketId);
-        let roomid = removeRoomUser(socketId);
-        if (roomid) {
+            const name = removeRoomUser(roomid, socketId);
             socket.leave(roomid);
-            io.to(roomid).emit('userLeave', { msg: `User left the room`, userId: socketId });
+            io.to(roomid).emit('userLeft', { msg: `${name} left the room`, userId: socketId });
+            console.log('user left', name);
+
+        } catch (err) {
+            console.log(err);
+            socket.emit('error', { error: err.message });
         }
     });
+
+    socket.on('updateIO', ({ roomid, input, output, language }) => {
+        try {
+            console.log('updateIO', input, output, language)
+            updateRoomIO(roomid, input, output, language);
+            socket.to(roomid).emit('updateIO', {
+                newinput: input,
+                newoutput: output,
+                newlanguage: language
+            });
+        } catch (err) {
+            console.log(err);
+            socket.emit('error', { error: err.message });
+        }
+    });
+
     socket.on('getRoom', ({ roomid }) => {
         try {
             io.in(roomid).emit('getRoom', { room: getRoom(roomid) });
         } catch (err) {
             console.log(err);
-            socket.emit('error', { error: err });
+            socket.emit('error', { error: err.message });
         }
     });
 
-    socket.on('deleteRoom', ({ roomid }) => {
-        try {
-            deleteRoom(roomid);
-            socket.to(roomid).emit('deleteRoom', { msg: `Room deleted` });
-        } catch (error) {
-            console.log("Error in deleting room", error);
-            socket.emit('error', { msg: error.message });
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+        let roomid = deleteRoom(socketId);
+        if (roomid !== null) {
+            const name = removeRoomUser(roomid, socketId);
+            socket.leave(roomid);
+            io.to(roomid).emit('userLeft', { msg: `${name} left the room`, userId: socketId });
+            console.log('user left', name);
         }
     });
 
     socket.on('Id', ({ roomid, peerId, name }) => {
-        try {
-            console.log(peerId, name)
-            socket.to(roomid).emit('Id', { peerId, name });
-        } catch (error) {
-            console.log("Error in sending Id", error);
-        }
+        console.log("peerId", peerId)
+        socket.to(roomid).emit('Id', { peerId, name });
     });
-    socket.on('drawData', (data) => {
-        try {
-            socket.to(data.roomid).emit('drawData', data);
-        } catch (error) {
-            console.log("Error in sending draw data", error);
-        }
+
+    socket.on("drawData", (data) => {
+        socket.to(data.roomId).emit("drawData", data);
     });
-    socket.on('start-video', (data) => {
-        try {
-            console.log("Starting video")
-            socket.broadcast.emit('start-video', data);
-        } catch (error) {
-            console.log("Error in starting video", error);
-        }
+
+    socket.on("start-video", (data) => {
+        socket.broadcast.emit("start-video", data);
     });
-    socket.on('quit-video', (data) => {
-        try {
-            console.log("Quitting video")
-            socket.to(roomid).emit('quit-video', data.peerId);
-        } catch (error) {
-            console.log("Error in quitting video", error);
-        }
+
+    socket.on("quit-video", (data) => {
+        console.log(data);
+        socket.to(data.roomId).emit("quit-video", data.peerId);
     });
 }
 

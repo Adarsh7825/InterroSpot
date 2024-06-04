@@ -14,15 +14,15 @@ import Settings from './components/core/Dashboard/Settings';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import { useSelector } from 'react-redux';
-import { ACCOUNT_TYPE } from './utils/constants'
+import { ACCOUNT_TYPE } from './utils/constants';
 import CreateInteviewByRecruiter from './components/core/Dashboard/RecruiterDashboard/CreateInteviewByRecruiter';
 import DataContextProvider from './context/DataContext';
 import RoomData from './components/core/Room/RoomData';
 import Room from './components/core/Room/Room';
 
 function App() {
-  const { user } = useSelector((state) => state.profile)
-  console.log(user)
+  const { user } = useSelector((state) => state.profile);
+  console.log(user);
   return (
     <DataContextProvider>
       <Router>
@@ -45,7 +45,7 @@ function App() {
               )
             }
             <Route path="dashboard/Settings" element={<Settings />} />
-            <Route path="/roomdata" element={<RoomData />} />
+            <Route path="/roomdata/:roomId" element={<RoomData />} />
             <Route path='/room' element={<Room />} />
             <Route path='*' element={<Error />} />
           </Routes>

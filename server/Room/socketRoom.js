@@ -1,58 +1,58 @@
 const diff = require('diff-match-patch');
 const dmp = new diff.diff_match_patch();
-let room = {};
+let rooms = {};
 
-function createRoom(roomid, roomName, code, language, input, output) {
-    if (!room[roomid]) {
-        room[roomid] = {
-            roomName,
+function createRoom(roomid, code, language, input, output) {
+    if (!rooms[roomid]) {
+        rooms[roomid] = {
             code,
             language,
             input,
             output,
             users: []
-        }
+        };
     }
 }
 
-
 function deleteRoom(roomid) {
     console.log("Deleting room", roomid);
-    if (room[roomid]) {
-        delete room[roomid];
+    if (rooms[roomid]) {
+        delete rooms[roomid];
     }
 }
 
 function addRoomUser(roomid, user) {
-    if (room[roomid]) {
-        room[roomid].users.push(user);
+    if (rooms[roomid]) {
+        rooms[roomid].users.push(user);
     }
 }
 
 function removeRoomUser(roomid, userId) {
     let userName;
-    if (room[roomid]) {
-        room[roomid].users = room[roomid].users.filter(user => {
-            if (user.userId === userId) {
-                userName = user.userName;
+    if (rooms[roomid]) {
+        rooms[roomid].users = rooms[roomid].users.filter(user => {
+            if (user.id === userId) {
+                userName = user.name;
                 return false;
             }
             return true;
         });
+        // Optionally delete the room if no users are left
+        // if (rooms[roomid].users.length === 0) {
+        //     deleteRoom(roomid);
+        // }
     }
-    // if (room[roomid].users.length === 0) {
-    //     deleteRoom(roomid);
-    // }
     return userName;
 }
 
-function updateRoom(roomid, code) {
-    if (room[roomid]) {
+function updateRoom(roomid, patch) {
+    if (rooms[roomid]) {
         try {
-            const code = room[roomid].code;
+            const code = rooms[roomid].code;
             const [newCode, result] = dmp.patch_apply(patch, code);
             if (result[0]) {
-                room[roomid].code = newCode;
+                rooms[roomid].code = newCode;
+                console.log(`Patch applied successfully for room ${roomid}. New code: ${newCode}`);
             } else {
                 console.log("Patch failed", result);
             }
@@ -61,19 +61,18 @@ function updateRoom(roomid, code) {
         }
     }
 }
-
 function getRoom(roomid) {
-    return room[roomid] ? room[roomid] : null;
+    return rooms[roomid] ? rooms[roomid] : null;
 }
 
 function updateRoomInputOutput(roomid, input = '', output = '', language = '') {
-    if (room[roomid]) {
+    if (rooms[roomid]) {
         try {
-            room[roomid].input = input;
-            room[roomid].output = output;
-            room[roomid].language = language;
+            rooms[roomid].input = input;
+            rooms[roomid].output = output;
+            rooms[roomid].language = language;
         } catch (error) {
-            console.log("Error in updating input output", room[roomid]);
+            console.log("Error in updating input output", rooms[roomid]);
         }
     }
 }
@@ -86,4 +85,4 @@ module.exports = {
     updateRoom,
     getRoom,
     updateRoomInputOutput
-}
+};
