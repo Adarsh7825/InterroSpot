@@ -174,9 +174,9 @@ const WhiteBoard = ({ socket, roomId }) => {
             cursor.style.display = "block";
             whiteBoard.style.cursor = "none";
             if (eraser.classList.contains("active")) {
-                cursor.style.backgroundImage = "url('./eraser.png')"
+                cursor.style.backgroundImage = "https://i.ibb.co/Y0hGbFf/eraser.png"
             } else if (pen.classList.contains("active")) {
-                cursor.style.backgroundImage = "url('./pencil.png')"
+                cursor.style.backgroundImage = "https://i.ibb.co/tmDc7mV/pencil.png"
             } else {
                 whiteBoard.style.cursor = "crosshair";
                 cursor.style.backgroundImage = "none";
@@ -391,8 +391,10 @@ const WhiteBoard = ({ socket, roomId }) => {
                 </div>
 
                 <div className="extras">
-                    <div id="eraser"></div>
-                    <div id="clearScreen">Clear</div>
+                    <div id="eraser">
+                        <img src="https://i.ibb.co/Y0hGbFf/eraser.png" alt="Eraser Image" />
+                    </div>
+                    <div className="text-black" id="clearScreen">Clear</div>
                     <div className="shapes">
                         <div id="pen" className="active">
                             <i className="fa-solid fa-pen"></i>

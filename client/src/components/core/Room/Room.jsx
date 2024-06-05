@@ -9,9 +9,11 @@ import axios from 'axios';
 import WhiteBoard from './WhiteBoard';
 import { useSelector } from "react-redux";
 import Ace from "./Ace";
+import VideoChat from "./VideoChat";
 const dmp = new diff_match_patch();
 
 const Room = () => {
+    const userVideoRef = useRef(null);
     const { currRoom, socket } = useContext(DataContext);
     const { user } = useSelector((state) => state.profile);
     const navigate = useNavigate();
@@ -163,7 +165,6 @@ const Room = () => {
                         socket.emit('getRoom', { roomid });
                     }
                 });
-
             }
             {
                 socket.off('getRoom');
@@ -221,6 +222,16 @@ const Room = () => {
         }
     };
 
+    const closeCameraAndMircrophone = () => {
+        if (userVideoRef.current.srcObject) {
+            userVideoRef.current.srcObject.getAudioTracks()[0].stop();
+            userVideoRef.current.srcObject.getVideoTracks()[0].stop();
+            userVideoRef.current.srcObject.getVideoTracks()[0].enabled = false;
+            userVideoRef.current.srcObject.getAudioTracks()[0].enabled = false;
+        }
+
+    }
+
     async function leaveRoom() {
         socket.emit('leave', { roomid });
         socket.off();
@@ -232,18 +243,7 @@ const Room = () => {
     if (user.rooms && user) {
         return (
             <div style={{ color: 'white', display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
-                <button id="leave-room" style={{
-                    position: 'absolute',
-                    top: '10px',
-                    right: '20px',
-                    fontSize: '1rem',
-                    padding: '0.5rem 0.8rem',
-                    borderRadius: '5px',
-                    transition: 'all 0.3s ease-in-out',
-                    cursor: 'pointer',
-                    zIndex: 100,
-                    backgroundColor: '#fff'
-                }} onClick={leaveRoom}>Leave Room</button>
+                <button id="leave-room" onClick={leaveRoom}>Leave Room</button>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem', gap: '2rem' }}>
                     {inRoomUsers.map((user) => (
                         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }} key={user.id}>
@@ -316,6 +316,13 @@ const Room = () => {
                         }}></div>
                     </div>
                 </div>
+                <VideoChat
+                    socket={socket}
+                    roomid={roomid}
+                    user={user}
+                    userVideo={userVideoRef}
+                    closeIt={closeCameraAndMircrophone}
+                />
                 <WhiteBoard roomId={roomid} socket={socket} />
                 <ToastContainer autoClose={2000} />
             </div>

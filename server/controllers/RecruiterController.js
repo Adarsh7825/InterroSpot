@@ -144,7 +144,7 @@ exports.createInterviewAndSession = async (jobPositionId, candidates) => {
                     sessionCreated = true;
 
                     // Generate the session link using the room's ID
-                    const sessionLink = `http://localhost:5173/rooms/${createdRoom.roomid}`;
+                    const sessionLink = `http://localhost:5173/roomdata/${createdRoom.roomid}`;
                     console.log(`${sessionLink}`)
                     await mailSender([
                         {

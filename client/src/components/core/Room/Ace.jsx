@@ -90,6 +90,7 @@ const Ace = ({
         setInitializedCode(newValue);
         updateRoom(patch);
         setCode(newValue);
+        console.log('Updated code:', newValue);
     }
 
     const handleIOChange = (newValue) => {
