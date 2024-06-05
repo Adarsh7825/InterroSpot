@@ -16,15 +16,19 @@
   transition: all 0.5s ease-in-out;
   cursor: none;
 }
+
 #white-board.active {
   top: 0;
 }
+
 #white-board.active #white-board-btn span {
   display: none;
 }
+
 #white-board.active #white-board-btn::after {
   content: "Code Editor";
 }
+
 #white-board .toolbar {
   width: 100vw;
   height: 80px;
@@ -34,12 +38,14 @@
   align-items: center;
   gap: 2vw;
 }
+
 #white-board .toolbar .sizes {
   max-width: 33%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 #white-board .toolbar .sizes .size {
   width: 120px;
   aspect-ratio: 12/5;
@@ -52,22 +58,26 @@
   justify-content: center;
   align-items: center;
 }
+
 #white-board .toolbar .sizes .size::before {
   content: "";
   width: 100%;
   height: calc(1px * var(--width));
   background-color: black;
 }
+
 #white-board .toolbar .sizes .size.active {
   transform: scale(1.1);
   box-shadow: 0 0 10px rgb(0, 0, 0);
 }
+
 #white-board .toolbar .colors {
   max-width: 33%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 #white-board .toolbar .colors .color {
   width: 50px;
   aspect-ratio: 1/1;
@@ -76,17 +86,20 @@
   background: var(--color);
   transition: all 0.2s ease-in-out;
 }
+
 #white-board .toolbar .colors .color.active {
   transform: scale(1.1);
   border: 3px solid black;
   box-shadow: 0 0 10px var(--color);
 }
+
 #white-board .toolbar .extras {
   display: flex;
   justify-content: center;
   align-items: center;
   max-width: 33%;
 }
+
 #white-board .toolbar .extras #clearScreen,
 #white-board .toolbar .extras #eraser {
   width: 60px;
@@ -100,20 +113,24 @@
   font-size: clamp(0.6rem, 1.2vw, 1.2rem);
   transition: 0.3s ease-in-out;
 }
+
 #white-board .toolbar .extras #eraser {
   min-width: 20px;
-  background: url("../../public/eraser.png") no-repeat center;
+  background: url("https://i.ibb.co/Y0hGbFf/eraser.png") no-repeat center;
   background-size: contain;
 }
+
 #white-board .toolbar .extras #eraser.active {
   transform: scale(1.1);
   border: 4px solid black;
 }
+
 #white-board .toolbar .extras .shapes {
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 #white-board .toolbar .extras .shapes .shape,
 #white-board .toolbar .extras .shapes #pen {
   width: clamp(20px, 4vw, 60px);
@@ -127,11 +144,13 @@
   font-size: clamp(1rem, 2vw, 2rem);
   transition: 0.3s ease-in-out;
 }
+
 #white-board .toolbar .extras .shapes .shape.active,
 #white-board .toolbar .extras .shapes #pen.active {
   transform: scale(1.1);
   border: 4px solid black;
 }
+
 #white-board #white-board-btn {
   margin: 0 auto;
   display: block;
@@ -143,10 +162,12 @@
   position: relative;
   outline: 0;
 }
+
 #white-board #white-board-btn:hover {
   background-color: black;
   color: white;
 }
+
 #white-board #white-board-btn::before {
   width: 100vw;
   height: 50px;
@@ -156,64 +177,78 @@
   position: absolute;
   box-shadow: 0 -5px 10px 0px rgba(0, 0, 0, 0.3);
 }
+
 .dark #white-board {
   background-color: #222;
   box-shadow: 0 5px 10px 0px rgba(255, 255, 255, 0.3);
 }
+
 .dark #white-board .toolbar {
   box-shadow: 0 0 10px white;
 }
+
 .dark #white-board .toolbar .sizes {
   color: white;
 }
-.dark #white-board .toolbar .sizes > * {
+
+.dark #white-board .toolbar .sizes>* {
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 }
-.dark #white-board .toolbar .sizes > *::before {
+
+.dark #white-board .toolbar .sizes>*::before {
   background-color: white;
 }
-.dark #white-board .toolbar .sizes > *.active {
+
+.dark #white-board .toolbar .sizes>*.active {
   box-shadow: 0 0 10px 4px white;
 }
+
 .dark #white-board .toolbar .color.active {
   border: 3px solid white;
   transform: scale(1.25);
   box-shadow: 0 0 10px 1px white;
 }
+
 .dark #white-board .toolbar .extras #clearScreen,
 .dark #white-board .toolbar .extras #eraser {
   border: 2px solid white;
   color: white;
 }
+
 .dark #white-board .toolbar .extras #clearScreen.active,
 .dark #white-board .toolbar .extras #eraser.active {
   border: 4px solid white;
 }
+
 .dark #white-board .toolbar .extras .shapes .shape,
 .dark #white-board .toolbar .extras .shapes #pen {
   color: white;
   border: 2px solid white;
 }
+
 .dark #white-board .toolbar .extras .shapes .shape.active,
 .dark #white-board .toolbar .extras .shapes #pen.active {
   border: 4px solid white;
 }
+
 .dark #white-board #white-board-btn {
   background-color: black;
   border: 1px solid white;
   color: white;
 }
+
 .dark #white-board #white-board-btn:hover {
   background-color: white;
   color: black;
 }
+
 .dark #white-board #white-board-btn::before {
   box-shadow: 0 -5px 10px 0px rgba(255, 255, 255, 0.3);
 }
 
 #cursor {
   position: absolute;
-  background-image: url("../../public/pencil.png");
+  background-image: url("https://i.ibb.co/tmDc7mV/pencil.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -231,4 +266,4 @@
   z-index: 1000;
   left: 100px;
   top: 100px;
-}/*# sourceMappingURL=whiteBoard.css.map */
+}
