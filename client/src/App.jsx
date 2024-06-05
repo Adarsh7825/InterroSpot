@@ -46,7 +46,7 @@ function App() {
             }
             <Route path="dashboard/Settings" element={<Settings />} />
             <Route path="/roomdata/:roomId" element={<RoomData />} />
-            <Route path='/room' element={<Room />} />
+            <Route path='/room/:roomId' element={<Room />} />
             <Route path='*' element={<Error />} />
           </Routes>
         </div>

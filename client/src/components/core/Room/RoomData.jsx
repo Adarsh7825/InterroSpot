@@ -6,10 +6,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import { DataContext } from '../../../context/DataContext';
 import { generateFromString } from 'generate-avatar';
 import axios from 'axios';
+import CameraCapture from './CameraCapture';
 
 const RoomData = () => {
     const { setCurrRoom, setUser, socket } = useContext(DataContext);
     const [isLoading, setIsLoading] = useState(false);
+    const [capturedPhoto, setCapturedPhoto] = useState(null);
     const { user } = useSelector((state) => state.profile);
     const { roomId } = useParams();
     const navigate = useNavigate();
@@ -31,13 +33,12 @@ const RoomData = () => {
         }
     }, [user?.firstName]);
 
-    useEffect(() => {
-        if (roomId) {
-            joinRoom(roomId);
-        }
-    }, [roomId]);
-
     const joinRoom = async (roomId) => {
+        if (!capturedPhoto) {
+            toast.error('Please capture a photo for validation.');
+            return;
+        }
+
         loadingStart();
         axios({
             method: 'get',
@@ -50,7 +51,7 @@ const RoomData = () => {
                 setCurrRoom(response.data);
                 socket.emit('joinRoom', { roomId, user });
                 loadingStop();
-                navigate('/room', { state: { roomid: roomId } });
+                navigate(`/room/${roomId}`, { state: { roomid: roomId } });
             })
             .catch((error) => {
                 loadingStop();
@@ -96,7 +97,7 @@ const RoomData = () => {
 
     return (
         <div>
-            <div className="room-data">
+            <div className="room-data text-white">
                 <div className="userData">
                     {user.avatar ?
                         <img src={user.avatar} height={100} alt='user profile' style={{ borderRadius: '50%', width: '5rem', height: '5rem' }} />
@@ -104,42 +105,11 @@ const RoomData = () => {
                     }
                 </div>
                 <div className="join-room">
-                    <div className="room-input">
-                        <input id="roomName" placeholder="Enter Room Name" />
-                    </div>
-                    <div className="room-input">
-                        <input id="roomID" placeholder="Enter Room ID to join" />
-                        <button onClick={joinRoom}>Join Room</button>
+                    <div>
+                        <button onClick={() => joinRoom(roomId)}>Join Room</button>
                     </div>
                 </div>
-                <table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th align="right">Room ID</th>
-                            <th align="right">Language</th>
-                            <th align="right">Last Used</th>
-                            <th align="right">Join Room</th>
-                            <th align="right">Delete Room</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {user.rooms.map((item, index) => (
-                            <tr key={index}>
-                                <td component="th" scope="row">{item.name}</td>
-                                <td align="right" onClick={copyRoomId}>{item.roomid}</td>
-                                <td align="right">{item.language}</td>
-                                <td align="right">{item.updatedAt}</td>
-                                <td align="right">
-                                    <button className="join-btn" onClick={() => getData(item)}>Join Room</button>
-                                </td>
-                                <td align="right">
-                                    <button className="delete-btn" onClick={deleteData(item)}>Delete Room</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <CameraCapture onCapture={setCapturedPhoto} />
             </div>
         </div>
     );
