@@ -33,6 +33,7 @@ const InterviewSessionSchema = new mongoose.Schema({
         ref: 'room',
         required: true,
     },
+    imageUrl: String,
 });
 
 module.exports = mongoose.model("InterviewSession", InterviewSessionSchema);

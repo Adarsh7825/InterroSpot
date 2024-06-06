@@ -1,7 +1,9 @@
 const Room = require('../DB/Schema/room');
 const User = require('../DB/Schema/user');
-
+const InterviewSession = require('../DB/Schema/InterviewSessionSchema');
 const baseURL = 'http://localhost:5173';
+const cloudinary = require('cloudinary').v2;
+
 
 // Method for creating a room
 exports.createRoom = async (req, res) => {
@@ -71,5 +73,42 @@ exports.deleteRoom = async (req, res) => {
     } catch (error) {
         console.log('error in delete room');
         res.status(400).send({ error: 'failed to delete room' });
+    }
+};
+
+// Method for uploading an image 
+const uploadImage = async (file) => {
+    return new Promise((resolve, reject) => {
+        cloudinary.uploader.upload(file.path, { upload_preset: 'ml_default' }, (error, result) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(result.secure_url);
+            }
+        });
+    });
+};
+
+exports.uploadImageController = async (req, res) => {
+    try {
+        console.log('File:', req.file);
+        console.log('Body:', req.body);
+
+        const { roomId } = req.body;
+        const file = req.file; // Assuming you are using multer to handle file uploads
+
+        if (!file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        const imageUrl = await uploadImage(file);
+
+        // Update the session with the image URL
+        await InterviewSession.findByIdAndUpdate(roomId, { imageUrl });
+
+        return res.status(200).json({ message: 'Image uploaded successfully', imageUrl });
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        return res.status(500).json({ message: 'Error uploading image', error });
     }
 };

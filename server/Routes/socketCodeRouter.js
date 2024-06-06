@@ -14,7 +14,7 @@ function manageRoom(socket, io) {
 
             await socket.join(roomid);
 
-            socket.emit('join', { msg: `Welcome to room`, room: getRoom(roomid) });
+            socket.emit('join', { msg: 'Welcome to room', room: getRoom(roomid) });
 
             socket.to(roomid).emit('userJoin', { msg: `New user joined ${name}`, newUser: { id: socketId, name, avatar } });
 
@@ -98,6 +98,10 @@ function manageRoom(socket, io) {
     socket.on("quit-video", (data) => {
         console.log(data);
         socket.to(data.roomId).emit("quit-video", data.peerId);
+    });
+
+    socket.on('tab-visibility-change', ({ roomId, isTabActive }) => {
+        socket.to(roomId).emit('tab-visibility-change', { roomId, isTabActive });
     });
 }
 
