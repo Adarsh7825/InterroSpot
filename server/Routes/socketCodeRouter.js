@@ -1,4 +1,4 @@
-const { createRoom, addRoomUser, removeRoomUser, getRoom, updateRoom, updateRoomIO, deleteRoom } = require('../Room/socketRoom');
+const { createRoom, addRoomUser, removeRoomUser, getRoom, updateRoom, updateRoomInputOutput, deleteRoom } = require('../Room/socketRoom');
 
 function manageRoom(socket, io) {
     const { id: socketId } = socket;
@@ -50,7 +50,7 @@ function manageRoom(socket, io) {
     socket.on('updateIO', ({ roomid, input, output, language }) => {
         try {
             console.log('updateIO', input, output, language)
-            updateRoomIO(roomid, input, output, language);
+            updateRoomInputOutput(roomid, input, output, language);
             socket.to(roomid).emit('updateIO', {
                 newinput: input,
                 newoutput: output,

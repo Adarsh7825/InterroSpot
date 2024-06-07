@@ -146,7 +146,6 @@ const VideoChat = ({ socket, roomid, user, userVideo, closeIt }) => {
     useEffect(() => {
         const handleVisibilityChange = () => {
             const isTabActive = !document.hidden;
-            console.log('Visibility changed:', isTabActive);
             setIsTabActive(isTabActive);
             socket.emit('tab-visibility-change', { roomId: roomid, isTabActive });
         };
