@@ -103,6 +103,11 @@ function manageRoom(socket, io) {
     socket.on('tab-visibility-change', ({ roomId, isTabActive }) => {
         socket.to(roomId).emit('tab-visibility-change', { roomId, isTabActive });
     });
+
+    socket.on('clearCanvas', ({ roomId }) => {
+        io.to(roomId).emit('clearCanvas');
+    });
+
 }
 
 module.exports = manageRoom;

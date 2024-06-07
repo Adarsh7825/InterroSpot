@@ -88,6 +88,7 @@ const WhiteBoard = ({ socket, roomId }) => {
         const clearScreenBtn = document.querySelector("#clearScreen");
         clearScreenBtn.addEventListener("click", () => {
             ctx.clearRect(0, 0, width, height);
+            socket.emit("clearCanvas", { roomId });
         });
 
         eraser.addEventListener("click", () => {
@@ -174,7 +175,7 @@ const WhiteBoard = ({ socket, roomId }) => {
             cursor.style.display = "block";
             whiteBoard.style.cursor = "none";
             if (eraser.classList.contains("active")) {
-                cursor.style.backgroundImage = "https://i.ibb.co/Y0hGbFf/eraser.png"
+                cursor.style.backgroundImage = "url('https://i.ibb.co/Y0hGbFf/eraser.png')"
             } else if (pen.classList.contains("active")) {
                 cursor.style.backgroundImage = "https://i.ibb.co/tmDc7mV/pencil.png"
             } else {
@@ -298,7 +299,7 @@ const WhiteBoard = ({ socket, roomId }) => {
             ctx.lineTo(triangle[0].x, triangle[0].y);
             ctx.stroke();
             // shapeDemo.style.width = shapeDemo.style.height = 0;
-            socket.emit("drawData", { triangle, color: data.color, thickness: data.thickness, shape: "triangle" });
+            socket.emit("drawData", { roomId, triangle, color: data.color, thickness: data.thickness, shape: "triangle" });
         }
 
         function drawRectangle() {
@@ -308,7 +309,7 @@ const WhiteBoard = ({ socket, roomId }) => {
             ctx.rect(rectangle[0], rectangle[1], rectangle[2] - rectangle[0], rectangle[3] - rectangle[1]);
             ctx.stroke();
             // shapeDemo.style.width = shapeDemo.style.height = 0;
-            socket.emit("drawData", { rectangle, color: data.color, thickness: data.thickness, shape: "rectangle" });
+            socket.emit("drawData", { roomId, rectangle, color: data.color, thickness: data.thickness, shape: "rectangle" });
         }
 
         function drawCircle() {
@@ -319,7 +320,7 @@ const WhiteBoard = ({ socket, roomId }) => {
             ctx.stroke();
             // shapeDemo.style.width = shapeDemo.style.height = 0;
 
-            socket.emit("drawData", { x: circle[2], y: circle[3], radius: circle[4], color: data.color, thickness: data.thickness, shape: "circle" });
+            socket.emit("drawData", { roomId, x: circle[2], y: circle[3], radius: circle[4], color: data.color, thickness: data.thickness, shape: "circle" });
         }
 
         socket.on("drawData", (data) => {
@@ -357,6 +358,9 @@ const WhiteBoard = ({ socket, roomId }) => {
             ctx.stroke();
         });
 
+        socket.on("clearCanvas", () => {
+            ctx.clearRect(0, 0, width, height);
+        });
 
         const whiteBoardBtn = document.querySelector("#white-board  button");
         whiteBoardBtn.addEventListener("click", () => {
@@ -391,9 +395,7 @@ const WhiteBoard = ({ socket, roomId }) => {
                 </div>
 
                 <div className="extras">
-                    <div id="eraser">
-                        <img src="https://i.ibb.co/Y0hGbFf/eraser.png" alt="Eraser Image" />
-                    </div>
+                    <div id="eraser"></div>
                     <div className="text-black" id="clearScreen">Clear</div>
                     <div className="shapes">
                         <div id="pen" className="active">
