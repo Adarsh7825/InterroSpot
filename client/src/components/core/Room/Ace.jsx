@@ -9,7 +9,6 @@ import 'ace-builds/src-noconflict/mode-c_cpp';
 import 'ace-builds/src-noconflict/mode-csharp';
 import 'ace-builds/src-noconflict/mode-golang';
 import 'ace-builds/src-noconflict/mode-rust';
-
 import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/theme-github';
 import 'ace-builds/src-noconflict/theme-cobalt';
@@ -121,7 +120,7 @@ const Ace = ({
                     mode={language}
                     theme={theme}
                     name="ACE_EDITOR"
-                    value={initializedCode}
+                    value={code}
                     fontSize={18}
                     height='50%'
                     width='100%'
