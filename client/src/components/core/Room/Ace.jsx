@@ -21,6 +21,7 @@ import 'ace-builds/src-noconflict/theme-vibrant_ink';
 import 'ace-builds/src-noconflict/theme-one_dark';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import { useSelector } from 'react-redux';
+import Settings from './Settings';
 
 const Ace = ({
     updateRoom,
@@ -105,6 +106,21 @@ const Ace = ({
 
     return (
         <div id="editor">
+            <Settings
+                setLanguage={setLanguage}
+                setTheme={setTheme}
+                setFontSize={setFontSize}
+                setFontFamily={setFontFamily}
+                language={language}
+                theme={theme}
+                fontSize={fontSize}
+                fontFamily={fontFamily}
+                updateRoom={updateRoom}
+                run={run}
+                handleLangChange={handleLangChange}
+                roomid={roomid}
+                running={running}
+            />
             <div id='workspace' style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
                 <AceEditor
                     setOptions={{

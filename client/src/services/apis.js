@@ -23,3 +23,7 @@ export const settingsEndpoints = {
 export const recruiterEndpoints = {
     CREATE_INTERVIEW_API: BASE_URL + "/recruiter/create-interview"
 }
+
+export const codeExecutionEndpoints = {
+    EXECUTE_CODE_API: BASE_URL + "/code/execute-code"
+}

@@ -7,15 +7,18 @@ import { diff_match_patch } from 'diff-match-patch';
 import defaultCode from './../../../static/default_code.json';
 import axios from 'axios';
 import WhiteBoard from './WhiteBoard';
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Ace from "./Ace";
 import VideoChat from "./VideoChat";
+import { executeCode } from "../../../services/operations/executeCode";
 const dmp = new diff_match_patch();
 
 const Room = () => {
     const userVideoRef = useRef(null);
     const { currRoom, socket } = useContext(DataContext);
     const { user } = useSelector((state) => state.profile);
+    const { token } = useSelector((state) => state.auth);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [language, setLanguage] = useState(currRoom ? currRoom.language : "javascript");
     let [code, setCode] = useState(currRoom ? currRoom.code : defaultCode[language ? language : "javascript"]);
@@ -206,21 +209,14 @@ const Room = () => {
     }
 
     const run = async () => {
-        setRunning(true);
-        const id = toast.loading("Compiling...");
-        const response = await apiConnector('POST', 'code/execute', { code, language, input }, { 'Authorization': `Bearer ${token}` });
-        if (response?.data?.success) {
-            toast.update(id, { render: "Compiled successfully", type: "success", isLoading: false, autoClose: 1000 });
-            setRunning(false);
-            let result = response.data.output ? response.data.output : response.data.error;
-            setOutput(result);
-            IOEMIT(input, result, language);
-        } else {
-            toast.update(id, { render: "Compilation failed", type: "error", isLoading: false, autoClose: 1500 });
-            setRunning(false);
-            console.log("error from axios", response.error);
+        try {
+            dispatch(executeCode({ code, language, input }, token));
+        } catch (error) {
+            console.log(error);
+            toast.error("Could not execute code");
         }
     };
+
 
     const closeCameraAndMircrophone = () => {
         if (userVideoRef.current.srcObject) {
