@@ -217,7 +217,7 @@ const Room = () => {
     const run = async () => {
         try {
             setRunning(true);
-            dispatch(executeCode({ code, language, input }, token, (newOutput) => {
+            dispatch(executeCode({ code, language, input }, (newOutput) => {
                 console.log(token)
                 setOutput(newOutput);
                 socket.emit('updateOutput', { roomid, newOutput });

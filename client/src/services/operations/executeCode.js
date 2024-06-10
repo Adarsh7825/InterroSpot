@@ -3,7 +3,7 @@ import { setLoading } from '../../slices/authSlice';
 import { toast } from 'react-toastify';
 import { apiConnector } from '../apiconnector';
 
-export function executeCode(codeData, token, setOutput) {
+export function executeCode(codeData, setOutput) {
     return async (dispatch) => {
         const { code, language, input } = codeData;
         const toastId = toast.loading("Executing Code...");
@@ -11,13 +11,7 @@ export function executeCode(codeData, token, setOutput) {
 
         try {
             // Include the Authorization header with the token
-            const headers = {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            };
-            console.log(headers);
-
-            const response = await apiConnector("POST", codeExecutionEndpoints.EXECUTE_CODE_API, { code, language, input }, headers);
+            const response = await apiConnector("POST", codeExecutionEndpoints.EXECUTE_CODE_API, { code, language, input });
             setOutput(response.data.output);
             console.log("EXECUTE_CODE_API RESPONSE........", response);
 

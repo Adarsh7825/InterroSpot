@@ -6,6 +6,7 @@ const roomRoutes = require('./Routes/roomRoutes');
 const codeRoutes = require('./Routes/codeRoutes');
 const profileRoutes = require('./Routes/profileRoutes');
 const recruiterRoutes = require('./Routes/recruiterRoutes');
+const QuestionRoutes = require('./Routes/QuestionRoutes');
 const cookieParser = require('cookie-parser');
 const dbConnect = require('./DB/connect');
 const app = express();
@@ -44,6 +45,7 @@ app.use('/api/v1/profile', profileRoutes);
 app.use('/api/v1/rooms', roomRoutes);
 app.use('/api/v1/code', codeRoutes);
 app.use('/api/v1/recruiter', recruiterRoutes);
+app.use('/api/v1/question', QuestionRoutes);
 httpserver.listen(port, () => {
     console.log("Server started on port 8181");
 });

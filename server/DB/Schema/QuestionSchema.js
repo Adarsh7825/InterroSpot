@@ -1,7 +1,31 @@
+const mongoose = require('mongoose');
+
 const QuestionSchema = new mongoose.Schema({
-    category: {
+    text: {
         type: String,
-        enum: ['frontend', 'backend', 'devops', 'desktop_engineer'],
+        required: true,
+    },
+    mainCategory: {
+        type: String,
+        enum: ['frontend', 'backend', 'full_stack', 'other'],
+        required: true,
+    },
+    subCategory: {
+        type: String,
+        enum: [
+            'browser_storage',
+            'functionality_correct_solution',
+            'performant',
+            'pseudo_code',
+            'corner_cases',
+            'data_structure',
+            'html_css_basic',
+            'html_css_advanced',
+            'html_css_responsive_grid',
+            'javascript_fundamentals',
+            'asynchronous_programming',
+            // Add more subcategories as needed
+        ],
         required: true,
     },
     difficulty: {
@@ -9,13 +33,21 @@ const QuestionSchema = new mongoose.Schema({
         enum: ['easy', 'medium', 'hard'],
         required: true,
     },
-    question: {
-        type: String,
-        required: true,
+    tags: [String],
+    createdAt: {
+        type: Date,
+        default: Date.now,
     },
-    options: [String], // For MCQs
-    correctOption: String, // For MCQs
-    answer: String, // For open-ended questions
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    },
 });
 
-module.exports = mongoose.model("Question", QuestionSchema);
+// Middleware to update the updatedAt field before saving
+QuestionSchema.pre('save', function (next) {
+    this.updatedAt = Date.now();
+    next();
+});
+
+module.exports = mongoose.model('Question', QuestionSchema);
