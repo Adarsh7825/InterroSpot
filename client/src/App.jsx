@@ -15,10 +15,12 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import { useSelector } from 'react-redux';
 import { ACCOUNT_TYPE } from './utils/constants';
+import 'react-toastify/dist/ReactToastify.css';
 import CreateInteviewByRecruiter from './components/core/Dashboard/RecruiterDashboard/CreateInteviewByRecruiter';
 import DataContextProvider from './context/DataContext';
 import RoomData from './components/core/Room/RoomData';
 import Room from './components/core/Room/Room';
+import CreateQuestionForm from './components/core/Question/CreateQuestionForm';
 
 function App() {
   const { user } = useSelector((state) => state.profile);
@@ -41,6 +43,13 @@ function App() {
               user?.accountType === ACCOUNT_TYPE.RECRUITER && (
                 <>
                   <Route path="dashboard/form" element={<CreateInteviewByRecruiter />} />
+                </>
+              )
+            }
+            {
+              user?.accountType === ACCOUNT_TYPE.ADMIN && (
+                <>
+                  <Route path="dashboard/create-question" element={<CreateQuestionForm />} />
                 </>
               )
             }

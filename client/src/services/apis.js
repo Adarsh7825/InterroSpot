@@ -27,3 +27,7 @@ export const recruiterEndpoints = {
 export const codeExecutionEndpoints = {
     EXECUTE_CODE_API: BASE_URL + "/code/execute-code"
 }
+
+export const createQuestionEndpoints = {
+    CREATE_QUESTION_API: BASE_URL + "/question/createQuestion"
+}
