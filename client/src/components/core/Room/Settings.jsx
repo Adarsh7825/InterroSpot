@@ -53,7 +53,7 @@ const Settings = ({
     running
 }) => {
     return (
-        <div className="editor-settings">
+        <div className="editor-setting">
             <div className="bg-gray-800 text-white p-4 flex items-center justify-between">
                 <div>
                     <h5 className="text-xl">{roomName}</h5>
@@ -66,7 +66,7 @@ const Settings = ({
                             id="language-selector"
                             value={language}
                             onChange={(e) => handleLangChange(e.target.value)}
-                            className="p-2 bg-gray-700 text-white rounded"
+                            className="p-2 bg-gray-700 text-black rounded"
                         >
                             {languageOptions.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -81,7 +81,7 @@ const Settings = ({
                             id="theme-selector"
                             value={theme}
                             onChange={(e) => setTheme(e.target.value)}
-                            className="p-2 bg-gray-700 text-white rounded"
+                            className="p-2 bg-gray-700 text-black rounded"
                         >
                             {themeOptions.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -96,7 +96,7 @@ const Settings = ({
                             id="font-family-selector"
                             value={fontFamily}
                             onChange={(e) => setFontFamily(e.target.value)}
-                            className="p-2 bg-gray-700 text-white rounded"
+                            className="p-2 bg-gray-700 text-black rounded"
                         >
                             {fontFamilyOptions.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -111,7 +111,7 @@ const Settings = ({
                             id="font-size-selector"
                             value={fontSize}
                             onChange={(e) => setFontSize(e.target.value)}
-                            className="p-2 bg-gray-700 text-white rounded"
+                            className="p-2 bg-gray-700 text-black rounded"
                         >
                             {fontSizeOptions.map((option) => (
                                 <option key={option} value={option}>

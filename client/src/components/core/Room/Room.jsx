@@ -191,6 +191,12 @@ const Room = () => {
                 })
             }
             {
+                socket.off('updateOutput');
+                socket.on('updateOutput', ({ newOutput }) => {
+                    setOutput(newOutput);
+                });
+            }
+            {
                 socket.off('error')
                 socket.on('error', ({ error }) => {
                     console.log('error from socket call', error)
@@ -210,13 +216,19 @@ const Room = () => {
 
     const run = async () => {
         try {
-            dispatch(executeCode({ code, language, input }, token));
+            setRunning(true);
+            dispatch(executeCode({ code, language, input }, token, (newOutput) => {
+                console.log(token)
+                setOutput(newOutput);
+                socket.emit('updateOutput', { roomid, newOutput });
+            }));
         } catch (error) {
             console.log(error);
             toast.error("Could not execute code");
+        } finally {
+            setRunning(false);
         }
     };
-
 
     const closeCameraAndMircrophone = () => {
         if (userVideoRef.current.srcObject) {

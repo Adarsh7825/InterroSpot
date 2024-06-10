@@ -1,4 +1,5 @@
-const axios = require('axios')
+const axios = require('axios');
+require('dotenv').config();
 
 const url = "https://api.jdoodle.com/v1/execute";
 const languageMap = {
@@ -22,7 +23,7 @@ const languageMap = {
         name: "csharp",
         version: 4,
     },
-    nodejs: {
+    javascript: {
         name: "nodejs",
         version: 4,
     },
@@ -32,11 +33,20 @@ const languageMap = {
     }
 };
 
-async function execute(req, res) {
+exports.execute = async (req, res) => {
     try {
         let { code, language } = req.body;
         const stdin = req.body.input || "";
+        console.log('Received Code:', code);
+        console.log('Received Language:', language);
+        console.log('Received Input:', stdin);
+
         language = languageMap[language];
+        if (!language) {
+            return res.status(400).send({ message: "Unsupported language" });
+        }
+        console.log('Mapped Language:', language);
+
         const data = {
             script: code,
             language: language.name,
@@ -45,12 +55,14 @@ async function execute(req, res) {
             clientSecret: process.env.CLIENT_SECRET,
             stdin: stdin,
         };
+        console.log('Request Data:', data);
+
         const response = await axios.post(url, data);
-        console.log(response.data)
+        console.log('Response Data:', response.data);
+
         return res.status(200).send(response.data);
     } catch (error) {
-        console.log('error in code execute');
-        return res.status(500).send({ error: error });
+        console.error('Error in code execution:', error.stack);
+        return res.status(500).send({ error: error.message });
     }
-}
-module.exports = { execute };
+};

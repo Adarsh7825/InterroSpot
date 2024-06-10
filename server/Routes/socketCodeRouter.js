@@ -62,6 +62,15 @@ function manageRoom(socket, io) {
         }
     });
 
+    socket.on('updateOutput', ({ roomid, newOutput }) => {
+        try {
+            io.to(roomid).emit('updateOutput', { newOutput });
+        } catch (err) {
+            console.log(err);
+            socket.emit('error', { error: err.message });
+        }
+    });
+
     socket.on('getRoom', ({ roomid }) => {
         try {
             io.in(roomid).emit('getRoom', { room: getRoom(roomid) });
@@ -100,6 +109,21 @@ function manageRoom(socket, io) {
         socket.to(data.roomId).emit("quit-video", data.peerId);
     });
 
+    socket.on('update-cursor-position', ({ roomId, username, x, y }) => {
+        console.log('Server Received Cursor Update:', { roomId, username, x, y });
+        const room = getRoom(roomId);
+        if (room) {
+            const cursors = room.users.reduce((acc, user) => {
+                if (user.name === username) {
+                    acc[username] = { x, y };
+                }
+                return acc;
+            }, {});
+            console.log('Broadcasting Cursor Update:', { cursors });
+            io.to(roomId).emit('update-cursor-position', { cursors });
+        }
+    });
+
     socket.on('tab-visibility-change', ({ roomId, isTabActive }) => {
         socket.to(roomId).emit('tab-visibility-change', { roomId, isTabActive });
     });
@@ -107,7 +131,6 @@ function manageRoom(socket, io) {
     socket.on('clearCanvas', ({ roomId }) => {
         io.to(roomId).emit('clearCanvas');
     });
-
 }
 
 module.exports = manageRoom;
