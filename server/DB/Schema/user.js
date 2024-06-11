@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const Schema = mongoose.Schema;
 
-
 const UserSchema = new Schema({
     firstName: {
         type: String,
@@ -98,10 +97,9 @@ const UserSchema = new Schema({
     },
     rooms: [{
         type: Schema.Types.ObjectId,
-        ref: "room"
+        ref: "Room"
     }]
 }, { timestamps: true });
-
 
 const modelName = 'User';
 

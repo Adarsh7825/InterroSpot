@@ -20,19 +20,22 @@ const roomSchema = new Schema({
     },
     language: {
         type: String,
-        require: true,
+        required: true,
         default: 'javascript'
     },
     owner: {
         type: Schema.Types.ObjectId,
-        required: true,
-        ref: 'user',
+        ref: 'User',
         immutable: true
+    },
+    recruiter: {
+        type: Schema.Types.ObjectId,
+        ref: 'Recruiter',
+        required: true
     }
 }, {
     timestamps: true
 });
-
 
 roomSchema.methods.toJSON = function () {
     let obj = this.toObject();
@@ -42,6 +45,6 @@ roomSchema.methods.toJSON = function () {
     return obj;
 }
 
-const room = mongoose.model('room', roomSchema);
-
-module.exports = room;
+// Check if the model already exists before defining it
+const Room = mongoose.models.Room || mongoose.model('Room', roomSchema);
+module.exports = Room;

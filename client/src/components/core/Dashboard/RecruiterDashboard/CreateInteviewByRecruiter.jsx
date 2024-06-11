@@ -118,14 +118,17 @@ function CreateInterviewByRecruiter() {
                         onChange={(e) => handleInputChange(e, index, 'jobPositions', 'title')}
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     />
-                    <input
-                        type="text"
+                    <select
                         name="category"
-                        placeholder="Category"
                         value={position.category}
                         onChange={(e) => handleInputChange(e, index, 'jobPositions', 'category')}
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
+                    >
+                        <option value="">Select Category</option>
+                        <option value="frontend">Frontend</option>
+                        <option value="backend">Backend</option>
+                        <option value="Full Stack">Full Stack</option>
+                    </select>
                     <input
                         type="text"
                         name="description"

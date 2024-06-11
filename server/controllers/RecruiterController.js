@@ -2,7 +2,7 @@ const Recruiter = require("../DB/Schema/Recruiter");
 const mailSender = require("../utils/mailSenderForAllCandidate");
 const User = require('../DB/Schema/user');
 const InterviewSession = require('../DB/Schema/InterviewSessionSchema');
-const Room = require('../DB/Schema/room');
+const Room = require('../DB/Schema/Room');
 const randomString = require('randomstring');
 const Codes = require('../utils/constants/default_code.json');
 
@@ -72,9 +72,13 @@ function checkAvailabilityOverlap(candidateAvailability, interviewerAvailability
     return true; // Placeholder implementation
 }
 
-async function createRoom(roomData, userId) {
+async function createRoom(roomData, userId, recruiterId) {
     try {
-        const room = new Room(roomData);
+        const room = new Room({
+            ...roomData,
+            owner: userId,
+            recruiter: recruiterId // Add recruiter's _id to the room schema
+        });
         await room.save();
 
         const user = await User.findById(userId);
@@ -129,8 +133,9 @@ exports.createInterviewAndSession = async (jobPositionId, candidates) => {
                     const code = Codes[language].snippet;
                     const owner = interviewer._id; // Assuming the interviewer is the room owner
                     const room = { name: roomName, roomid, language, code, owner };
+                    console.log('this sisssss' + recruiter._id);
 
-                    const createdRoom = await createRoom(room, interviewer._id);
+                    const createdRoom = await createRoom(room, interviewer._id, recruiter._id);
                     const session = new InterviewSession({
                         candidate: candidate._id,
                         interviewer: interviewer._id,

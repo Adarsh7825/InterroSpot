@@ -31,6 +31,7 @@ const Room = () => {
     const [running, setRunning] = useState(false);
     const EditorRef = useRef(null);
     const REACT_APP_BACKEND_URL = 'http://localhost:8181/';
+    const [questions, setQuestions] = useState([]);
 
     function updateRoom(patch) {
         socket.emit('update', { roomid, patch });
@@ -218,7 +219,6 @@ const Room = () => {
         try {
             setRunning(true);
             dispatch(executeCode({ code, language, input }, (newOutput) => {
-                console.log(token)
                 setOutput(newOutput);
                 socket.emit('updateOutput', { roomid, newOutput });
             }));
@@ -245,6 +245,26 @@ const Room = () => {
         socket.off();
         navigate('/');
     }
+
+    useEffect(() => {
+        // Fetch questions based on room ID
+        const fetchQuestions = async () => {
+            try {
+                const response = await axios.get(`${REACT_APP_BACKEND_URL}api/v1/question/getQuestions/${roomid}`);
+                console.log('Questions:', response.data[0].text)
+                console.log('Questions:', response.data[0].mainCategory)
+                console.log('Questions:', response.data[0].subCategory)
+                console.log('Questions:', response.data[0].difficulty)
+                console.log('Questions:', response.data[0].tags)
+                setQuestions(response.data);
+            } catch (error) {
+                console.error('Error fetching questions:', error);
+                toast.error('Error fetching questions');
+            }
+        };
+
+        fetchQuestions();
+    }, [roomid]);
 
     console.log(user);
 
@@ -333,6 +353,23 @@ const Room = () => {
                 />
                 <WhiteBoard roomId={roomid} socket={socket} />
                 <ToastContainer autoClose={2000} />
+                <div>
+                    <h2>Questions</h2>
+                    {questions.length > 0 ? (
+                        questions.map((question, index) => (
+                            <div key={index}>
+                                <h3>{question.text}</h3>
+                                <p>Main Category: {question.mainCategory}</p>
+                                <p>Sub Category: {question.subCategory}</p>
+                                <p>Difficulty: {question.difficulty}</p>
+                                <p>Tags: {question.tags.join(', ')}</p>
+                            </div>
+                        ))
+                    ) : (
+                        <p>No questions found</p>
+                    )}
+                    <ToastContainer autoClose={2000} />
+                </div>
             </div>
         )
     }
