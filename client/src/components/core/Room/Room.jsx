@@ -11,6 +11,8 @@ import { useDispatch, useSelector } from "react-redux";
 import Ace from "./Ace";
 import VideoChat from "./VideoChat";
 import { executeCode } from "../../../services/operations/executeCode";
+import StarRatingComponent from 'react-star-rating-component';
+
 const dmp = new diff_match_patch();
 
 const Room = () => {
@@ -32,6 +34,7 @@ const Room = () => {
     const EditorRef = useRef(null);
     const REACT_APP_BACKEND_URL = 'http://localhost:8181/';
     const [questions, setQuestions] = useState([]);
+    const [overallFeedback, setOverallFeedback] = useState(null);
 
     function updateRoom(patch) {
         socket.emit('update', { roomid, patch });
@@ -266,6 +269,53 @@ const Room = () => {
         fetchQuestions();
     }, [roomid]);
 
+    const handleStarClick = (nextValue, prevValue, name) => {
+        const updatedQuestions = questions.map((question, index) => {
+            if (index === parseInt(name)) {
+                return { ...question, feedback: nextValue };
+            }
+            return question;
+        });
+        setQuestions(updatedQuestions);
+    };
+
+    const calculateOverallFeedback = (questions) => {
+        let totalRating = 0;
+        let ratedQuestions = 0;
+
+        questions.forEach(question => {
+            if (question.feedback !== undefined && question.feedback !== null) {
+                totalRating += question.feedback;
+                ratedQuestions++;
+            }
+        });
+
+        if (ratedQuestions === 0) {
+            return 'no_feedback';
+        }
+
+        const averageRating = totalRating / ratedQuestions;
+
+        if (averageRating >= 8) {
+            return 'strong_yes';
+        } else if (averageRating >= 6) {
+            return 'yes';
+        } else if (averageRating >= 4) {
+            return 'no';
+        } else {
+            return 'strong_no';
+        }
+    };
+
+    useEffect(() => {
+        const allRated = questions.every(question => question.feedback !== null);
+        if (allRated) {
+            const feedback = calculateOverallFeedback(questions);
+            setOverallFeedback(feedback);
+            toast.success(`Overall Feedback: ${feedback}`);
+        }
+    }, [questions]);
+
     console.log(user);
 
     if (user.rooms && user) {
@@ -353,20 +403,23 @@ const Room = () => {
                 />
                 <WhiteBoard roomId={roomid} socket={socket} />
                 <ToastContainer autoClose={2000} />
-                <div>
+                <div style={{ color: 'white', display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
                     <h2>Questions</h2>
-                    {questions.length > 0 ? (
-                        questions.map((question, index) => (
-                            <div key={index}>
-                                <h3>{question.text}</h3>
-                                <p>Main Category: {question.mainCategory}</p>
-                                <p>Sub Category: {question.subCategory}</p>
-                                <p>Difficulty: {question.difficulty}</p>
-                                <p>Tags: {question.tags.join(', ')}</p>
-                            </div>
-                        ))
-                    ) : (
-                        <p>No questions found</p>
+                    {questions.map((question, index) => (
+                        <div key={index} style={{ marginBottom: '1rem' }}>
+                            <h3>{question.text}</h3>
+                            <StarRatingComponent
+                                name={`${index}`}
+                                starCount={10}
+                                value={question.feedback || 0}
+                                onStarClick={handleStarClick}
+                            />
+                        </div>
+                    ))}
+                    {overallFeedback && (
+                        <div>
+                            <h3>Overall Feedback: {overallFeedback}</h3>
+                        </div>
                     )}
                     <ToastContainer autoClose={2000} />
                 </div>
