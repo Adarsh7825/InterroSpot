@@ -109,7 +109,7 @@ const RoomData = () => {
                         <button onClick={() => joinRoom(roomId)}>Join Room</button>
                     </div>
                 </div>
-                <CameraCapture onCapture={setCapturedPhoto} />
+                <CameraCapture onCapture={setCapturedPhoto} roomId={roomId} />
             </div>
         </div>
     );

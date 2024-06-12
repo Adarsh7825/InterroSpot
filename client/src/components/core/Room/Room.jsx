@@ -35,6 +35,7 @@ const Room = () => {
     const REACT_APP_BACKEND_URL = 'http://localhost:8181/';
     const [questions, setQuestions] = useState([]);
     const [overallFeedback, setOverallFeedback] = useState(null);
+    const [newQuestionText, setNewQuestionText] = useState('');
 
     function updateRoom(patch) {
         socket.emit('update', { roomid, patch });
@@ -312,9 +313,18 @@ const Room = () => {
         if (allRated) {
             const feedback = calculateOverallFeedback(questions);
             setOverallFeedback(feedback);
-            toast.success(`Overall Feedback: ${feedback}`);
+            // toast.success(`Overall Feedback: ${feedback}`);
         }
     }, [questions]);
+
+    const addQuestion = () => {
+        if (newQuestionText.trim() !== '') {
+            setQuestions([...questions, { text: newQuestionText, feedback: null }]);
+            setNewQuestionText('');
+        } else {
+            toast.error('Question text cannot be empty');
+        }
+    };
 
     console.log(user);
 
@@ -421,6 +431,16 @@ const Room = () => {
                             <h3>Overall Feedback: {overallFeedback}</h3>
                         </div>
                     )}
+                    <div style={{ marginTop: '2rem' }}>
+                        <input
+                            type="text"
+                            value={newQuestionText}
+                            onChange={(e) => setNewQuestionText(e.target.value)}
+                            placeholder="Enter new question"
+                            style={{ padding: '0.5rem', width: '80%' }}
+                        />
+                        <button onClick={addQuestion} className="">Add Question</button>
+                    </div>
                     <ToastContainer autoClose={2000} />
                 </div>
             </div>

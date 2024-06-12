@@ -1,4 +1,4 @@
-const Room = require('../DB/Schema/room');
+const Room = require('../DB/Schema/Room');
 const User = require('../DB/Schema/user');
 const InterviewSession = require('../DB/Schema/InterviewSessionSchema');
 const baseURL = 'http://localhost:5173';

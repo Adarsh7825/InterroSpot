@@ -15,6 +15,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import { useSelector } from 'react-redux';
 import { ACCOUNT_TYPE } from './utils/constants';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CreateInteviewByRecruiter from './components/core/Dashboard/RecruiterDashboard/CreateInteviewByRecruiter';
 import DataContextProvider from './context/DataContext';
@@ -30,6 +31,7 @@ function App() {
       <Router>
         <div className="w-screen min-h-screen bg-richblack-900 flex flex-col font-inter">
           <Navbar />
+          <ToastContainer autoClose={2000} />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="signup" element={<Signup />} />

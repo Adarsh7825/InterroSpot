@@ -7,6 +7,8 @@ const codeRoutes = require('./Routes/codeRoutes');
 const profileRoutes = require('./Routes/profileRoutes');
 const recruiterRoutes = require('./Routes/recruiterRoutes');
 const QuestionRoutes = require('./Routes/QuestionRoutes');
+const captureImageRoutes = require('./Routes/CaptureImageUploadRoutes');
+const fileUpload = require('express-fileupload');
 const cookieParser = require('cookie-parser');
 const dbConnect = require('./DB/connect');
 const app = express();
@@ -18,6 +20,7 @@ const initSocketIo = require('./initSocket');
 const port = process.env.PORT || 8181;
 require('dotenv').config();
 
+app.use(fileUpload());
 app.use(bodyParser.json({ limit: '1mb' }));
 app.use(cookieParser());
 app.use(express.json()); // For JSON payloads
@@ -46,6 +49,7 @@ app.use('/api/v1/rooms', roomRoutes);
 app.use('/api/v1/code', codeRoutes);
 app.use('/api/v1/recruiter', recruiterRoutes);
 app.use('/api/v1/question', QuestionRoutes);
+app.use('/api/v1/captureImage', captureImageRoutes)
 httpserver.listen(port, () => {
     console.log("Server started on port 8181");
 });

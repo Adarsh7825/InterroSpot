@@ -31,38 +31,10 @@ const InterviewSessionSchema = new mongoose.Schema({
     },
     roomId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'room',
+        ref: 'Room',
         required: true,
     },
-    imageUrl: String,
 });
 
-// Method to calculate overall feedback
-InterviewSessionSchema.methods.calculateOverallFeedback = function () {
-    let totalRating = 0;
-    let ratedQuestions = 0;
-
-    this.questions.forEach(question => {
-        if (question.feedback) {
-            totalRating += question.feedback;
-            ratedQuestions++;
-        }
-    });
-
-    const averageRating = totalRating / ratedQuestions;
-
-    // Example logic to determine overall feedback based on average rating
-    if (averageRating >= 8) {
-        this.overallFeedback = 'strong_yes';
-    } else if (averageRating >= 6) {
-        this.overallFeedback = 'yes';
-    } else if (averageRating >= 4) {
-        this.overallFeedback = 'no';
-    } else {
-        this.overallFeedback = 'strong_no';
-    }
-
-    return this.overallFeedback;
-};
 
 module.exports = mongoose.model("InterviewSession", InterviewSessionSchema);

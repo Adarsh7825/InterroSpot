@@ -32,7 +32,11 @@ const roomSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Recruiter',
         required: true
-    }
+    },
+    imageUrl: {
+        type: String,
+        default: ''
+    },
 }, {
     timestamps: true
 });
