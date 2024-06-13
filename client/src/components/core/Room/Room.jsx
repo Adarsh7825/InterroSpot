@@ -13,6 +13,7 @@ import VideoChat from "./VideoChat";
 import { executeCode } from "../../../services/operations/executeCode";
 import StarRatingComponent from 'react-star-rating-component';
 import jsPDF from 'jspdf';
+import { ACCOUNT_TYPE } from "../../../utils/constants";
 
 const dmp = new diff_match_patch();
 
@@ -420,7 +421,7 @@ const Room = () => {
         return (
             <div style={{ color: 'white', display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
                 <button id="leave-room" onClick={leaveRoom}>Leave Room</button>
-                <button id="generate-pdf" onClick={generatePDF}>Generate PDF</button>
+                {user.accountType !== ACCOUNT_TYPE.CANDIDATE && <button id="generate-pdf" onClick={generatePDF}>Generate PDF</button>}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem', gap: '2rem' }}>
                     {inRoomUsers.map((user) => (
                         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }} key={user.id}>
@@ -502,7 +503,7 @@ const Room = () => {
                 />
                 <WhiteBoard roomId={roomid} socket={socket} />
                 <ToastContainer autoClose={2000} />
-                <div style={{ color: 'white', display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
+                {user.accountType !== ACCOUNT_TYPE.CANDIDATE && <div style={{ color: 'white', display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
                     <h2>Questions</h2>
                     {questions.map((question, index) => (
                         <div key={index} style={{ marginBottom: '1rem' }}>
@@ -550,7 +551,7 @@ const Room = () => {
                         />
                         <button onClick={addQuestion} className="">Add Question</button>
                     </div>
-                </div>
+                </div>}
             </div>
         )
     }
