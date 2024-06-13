@@ -37,6 +37,10 @@ const roomSchema = new Schema({
         type: String,
         default: ''
     },
+    imageUrlforInterviewer: {
+        type: String,
+        default: ''
+    },
 }, {
     timestamps: true
 });

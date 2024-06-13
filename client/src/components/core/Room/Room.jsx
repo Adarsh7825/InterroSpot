@@ -257,15 +257,31 @@ const Room = () => {
             console.log('Generating PDF...');
             const doc = new jsPDF();
 
-            // Add the photo
-            const img = new Image();
-            const response = await axios.get(`${REACT_APP_BACKEND_URL}api/v1/captureImage/fetchImage/${roomid}`);
+            // Add the candidate photo
+            const candidateImg = new Image();
+            const candidateResponse = await axios.get(`${REACT_APP_BACKEND_URL}api/v1/captureImage/fetchImage/${roomid}`);
+            console.log('Candidate Image URL:', candidateResponse.data.room.imageUrl);
+            candidateImg.src = candidateResponse.data.room.imageUrl;
 
-            console.log('Image URL:', response.data.room.imageUrl);
-            img.src = response.data.room.imageUrl;
+            // Ensure the image is loaded before adding it to the PDF
+            await new Promise((resolve) => {
+                candidateImg.onload = resolve;
+            });
 
+            doc.addImage(candidateImg.src, 'JPEG', 10, 10, 50, 50);
 
-            doc.addImage(img.src, 'JPEG', 10, 10, 50, 50);
+            // Add the interviewer photo
+            const interviewerImg = new Image();
+            const interviewerResponse = await axios.get(`${REACT_APP_BACKEND_URL}api/v1/captureImage/fetchImage/${roomid}`);
+            console.log('Interviewer Image URL:', interviewerResponse.data.room.imageUrlforInterviewer);
+            interviewerImg.src = interviewerResponse.data.room.imageUrlforInterviewer;
+
+            // Ensure the image is loaded before adding it to the PDF
+            await new Promise((resolve) => {
+                interviewerImg.onload = resolve;
+            });
+
+            doc.addImage(interviewerImg.src, 'JPEG', 70, 10, 50, 50); // Adjust coordinates to avoid overlap
 
             // Add the questions and ratings
             let yOffset = 70;
@@ -318,7 +334,6 @@ const Room = () => {
 
             // Add the openplayback
             doc.text(`Openplayback: link`, 10, yOffset + lineHeight * 8);
-
 
             // Save the PDF
             doc.save('assessment.pdf');
