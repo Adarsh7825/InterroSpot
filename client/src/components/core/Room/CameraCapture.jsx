@@ -42,7 +42,7 @@ const CameraCapture = ({ onCapture, roomId }) => {
         formData.append('imageUrl', blob, 'photo.png'); // Ensure the key matches the backend expectation
 
         try {
-            const response = await axios.post(`http://localhost:8181/api/v1/captureImage/uploadImage/NX5oHS`, formData, {
+            const response = await axios.post(`http://localhost:8181/api/v1/captureImage/uploadImage/`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

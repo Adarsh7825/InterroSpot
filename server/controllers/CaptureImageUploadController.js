@@ -47,10 +47,10 @@ exports.uploadImage = async (req, res) => {
     }
 };
 
-exports.getImages = async (req, res) => { // Ensure correct function name
+exports.getImages = async (req, res) => {
     try {
         const { roomId } = req.params;
-        const room = await Room.findById(roomId);
+        const room = await Room.findOne({ roomid: roomId });
 
         if (!room) {
             return res.status(404).json({ success: false, message: 'Room not found' });

@@ -12,6 +12,7 @@ import Ace from "./Ace";
 import VideoChat from "./VideoChat";
 import { executeCode } from "../../../services/operations/executeCode";
 import StarRatingComponent from 'react-star-rating-component';
+import jsPDF from 'jspdf';
 
 const dmp = new diff_match_patch();
 
@@ -250,6 +251,83 @@ const Room = () => {
         navigate('/');
     }
 
+    async function generatePDF() {
+        try {
+            console.log('Generating PDF...');
+            const doc = new jsPDF();
+
+            // Add the photo
+            const img = new Image();
+            const response = await axios.get(`${REACT_APP_BACKEND_URL}api/v1/captureImage/fetchImage/${roomid}`);
+
+            console.log('Image URL:', response.data.room.imageUrl);
+            img.src = response.data.room.imageUrl;
+
+
+            doc.addImage(img.src, 'JPEG', 10, 10, 50, 50);
+
+            // Add the questions and ratings
+            let yOffset = 70;
+            const pageHeight = doc.internal.pageSize.height;
+            const lineHeight = 10;
+            const margin = 10;
+
+            questions.forEach((question, index) => {
+                if (yOffset + lineHeight * 4 > pageHeight - margin) {
+                    doc.addPage();
+                    yOffset = margin;
+                }
+                doc.text(`Question ${index + 1}: ${question.text}`, 10, yOffset);
+                yOffset += lineHeight;
+                doc.text(`Rating: ${question.feedback}`, 10, yOffset);
+                yOffset += lineHeight;
+                doc.text(`Strength: ${question.strength}`, 10, yOffset);
+                yOffset += lineHeight;
+                doc.text(`Ease of Improvement: ${question.improvement}`, 10, yOffset);
+                yOffset += lineHeight * 2;
+            });
+
+            // Add the final verdict
+            if (yOffset + lineHeight > pageHeight - margin) {
+                doc.addPage();
+                yOffset = margin;
+            }
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`Final Verdict: ${overallFeedback}`, 10, yOffset);
+
+            // Add the interview date and time
+            const date = new Date();
+            const formattedDate = date.toLocaleDateString();
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Interview Date: ${formattedDate}`, 10, yOffset + lineHeight);
+
+            // Add the candidate name and email
+            doc.text(`Candidate Name: ${user.firstName} ${user.lastName}`, 10, yOffset + lineHeight * 2);
+            doc.text(`Candidate Email: ${user.email}`, 10, yOffset + lineHeight * 3);
+
+            // Add the position applying for
+            doc.text(`Position: Software Engineer`, 10, yOffset + lineHeight * 4);
+
+            // Add the interviewer name and email and Jobposition
+            doc.text(`Interviewer Name: Interviewer`, 10, yOffset + lineHeight * 5);
+            doc.text(`Interviewer Email: Interviewer`, 10, yOffset + lineHeight * 6);
+            doc.text(`Job Position: Interviewer`, 10, yOffset + lineHeight * 7);
+
+            // Add the openplayback
+            doc.text(`Openplayback: link`, 10, yOffset + lineHeight * 8);
+
+
+            // Save the PDF
+            doc.save('assessment.pdf');
+            console.log('PDF saved');
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            toast.error('Error generating PDF');
+        }
+    }
+
     useEffect(() => {
         // Fetch questions based on room ID
         const fetchQuestions = async () => {
@@ -274,6 +352,16 @@ const Room = () => {
         const updatedQuestions = questions.map((question, index) => {
             if (index === parseInt(name)) {
                 return { ...question, feedback: nextValue };
+            }
+            return question;
+        });
+        setQuestions(updatedQuestions);
+    };
+
+    const handleInputChange = (index, field, value) => {
+        const updatedQuestions = questions.map((question, i) => {
+            if (i === index) {
+                return { ...question, [field]: value };
             }
             return question;
         });
@@ -319,7 +407,7 @@ const Room = () => {
 
     const addQuestion = () => {
         if (newQuestionText.trim() !== '') {
-            setQuestions([...questions, { text: newQuestionText, feedback: null }]);
+            setQuestions([...questions, { text: newQuestionText, feedback: null, strength: '', improvement: '' }]);
             setNewQuestionText('');
         } else {
             toast.error('Question text cannot be empty');
@@ -332,6 +420,7 @@ const Room = () => {
         return (
             <div style={{ color: 'white', display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
                 <button id="leave-room" onClick={leaveRoom}>Leave Room</button>
+                <button id="generate-pdf" onClick={generatePDF}>Generate PDF</button>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem', gap: '2rem' }}>
                     {inRoomUsers.map((user) => (
                         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }} key={user.id}>
@@ -424,6 +513,26 @@ const Room = () => {
                                 value={question.feedback || 0}
                                 onStarClick={handleStarClick}
                             />
+                            <div>
+                                <label>Strength:</label>
+                                <input
+                                    type="text"
+                                    value={question.strength || ''}
+                                    onChange={(e) => handleInputChange(index, 'strength', e.target.value)}
+                                    placeholder="Enter strength"
+                                    style={{ padding: '0.5rem', width: '80%' }}
+                                />
+                            </div>
+                            <div>
+                                <label>Ease of Improvement:</label>
+                                <input
+                                    type="text"
+                                    value={question.improvement || ''}
+                                    onChange={(e) => handleInputChange(index, 'improvement', e.target.value)}
+                                    placeholder="Enter ease of improvement"
+                                    style={{ padding: '0.5rem', width: '80%' }}
+                                />
+                            </div>
                         </div>
                     ))}
                     {overallFeedback && (
@@ -441,7 +550,6 @@ const Room = () => {
                         />
                         <button onClick={addQuestion} className="">Add Question</button>
                     </div>
-                    <ToastContainer autoClose={2000} />
                 </div>
             </div>
         )

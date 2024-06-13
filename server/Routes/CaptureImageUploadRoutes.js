@@ -4,6 +4,6 @@ const { auth, isAdmin, isCandidate, isInterviewer, isRecruiter } = require('../m
 const { uploadImage, getImages } = require('../controllers/CaptureImageUploadController')
 
 router.post('/uploadImage/:roomId', uploadImage);
-router.get('/fetchImage/:roomId', auth, isAdmin, isInterviewer, getImages);
+router.get('/fetchImage/:roomId', getImages);
 
 module.exports = router;
