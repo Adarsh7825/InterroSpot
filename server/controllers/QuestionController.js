@@ -18,13 +18,10 @@ exports.fetchQuestions = async (req, res) => {
         const { roomid } = req.params;
 
         // Find the room by room ID and populate the owner field
-        const room = await Room.findOne({ roomid }).populate('owner');
+        const room = await Room.findOne({ roomid });
         if (!room) {
             return res.status(404).json({ success: false, message: 'Room not found' });
         }
-
-        // Find the recruiter (owner) by owner ID
-        console.log(room.owner._id + "simple check")
         const recruiter = await Recruiter.findById(room.recruiter._id);
         console.log("checking " + recruiter);
         if (!recruiter) {

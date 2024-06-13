@@ -321,16 +321,20 @@ const Room = () => {
             doc.text(`Interview Date: ${formattedDate}`, 10, yOffset + lineHeight);
 
             // Add the candidate name and email
-            doc.text(`Candidate Name: ${user.firstName} ${user.lastName}`, 10, yOffset + lineHeight * 2);
-            doc.text(`Candidate Email: ${user.email}`, 10, yOffset + lineHeight * 3);
-
+            if (user?.accountType === ACCOUNT_TYPE.CANDIDATE) {
+                doc.text(`Candidate Name: ${user.firstName} ${user.lastName}`, 10, yOffset + lineHeight * 2);
+                doc.text(`Candidate Email: ${user.email}`, 10, yOffset + lineHeight * 3);
+            }
             // Add the position applying for
-            doc.text(`Position: Software Engineer`, 10, yOffset + lineHeight * 4);
+            const getJobPosition = await axios.get(`${REACT_APP_BACKEND_URL}api/v1/recruiter/getjobposition/${roomid}`)
+            console.log(getJobPosition.data)
+            doc.text(`Position Applied : ${getJobPosition.data}`, 10, yOffset + lineHeight * 4);
 
             // Add the interviewer name and email and Jobposition
-            doc.text(`Interviewer Name: Interviewer`, 10, yOffset + lineHeight * 5);
-            doc.text(`Interviewer Email: Interviewer`, 10, yOffset + lineHeight * 6);
-            doc.text(`Job Position: Interviewer`, 10, yOffset + lineHeight * 7);
+            if (user?.accountType !== ACCOUNT_TYPE.CANDIDATE) {
+                doc.text(`Interviewer Name: ${user.firstName}`, 10, yOffset + lineHeight * 5);
+                doc.text(`Interviewer Email: ${user.email}`, 10, yOffset + lineHeight * 6);
+            }
 
             // Add the openplayback
             doc.text(`Openplayback: link`, 10, yOffset + lineHeight * 8);

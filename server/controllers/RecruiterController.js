@@ -179,3 +179,28 @@ exports.createInterviewAndSession = async (jobPositionId, candidates) => {
         return { success: false, message: 'Something went wrong while creating interview sessions', error: error.toString() };
     }
 };
+
+
+exports.fetchJobPositionFromRecruiter = async (req, res) => {
+    try {
+        const { roomid } = req.params;
+
+        // Find the room by room ID and populate the owner field
+        const room = await Room.findOne({ roomid });
+        if (!room) {
+            return res.status(404).json({ success: false, message: 'Room not found' });
+        }
+        const recruiter = await Recruiter.findById(room.recruiter._id);
+        console.log("checking " + recruiter);
+        if (!recruiter) {
+            return res.status(404).json({ success: false, message: 'Recruiter not found' });
+        }
+
+        const jobPositions = recruiter.jobPositions[0].category;
+        res.status(200).json(jobPositions);
+        // Fetch questions based on the recruiter's main category
+    } catch (error) {
+        console.error('Error fetching JobPosition:', error);
+        res.status(500).json({ success: false, message: 'Error fetching Jobposition' });
+    }
+};
