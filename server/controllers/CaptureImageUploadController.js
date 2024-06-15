@@ -1,4 +1,4 @@
-const Room = require('../DB/Schema/Room');
+const Room = require('../DB/Schema/room');
 const { uploadImageToCloudinary } = require('../utils/imageUploader');
 const fs = require('fs');
 const mongoose = require('mongoose');

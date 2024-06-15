@@ -3,7 +3,7 @@ require('dotenv').config();
 
 mongoose.set('strictQuery', true);
 
-const url = process.env.MONGO_URL;
+const url = process.env.MONGODB_URI;
 
 const dbConnect = async () => {
     try {

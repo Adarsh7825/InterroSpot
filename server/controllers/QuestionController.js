@@ -1,5 +1,5 @@
 const Question = require('../DB/Schema/QuestionSchema');
-const Room = require('../DB/Schema/Room');
+const Room = require('../DB/Schema/room');
 const Recruiter = require('../DB/Schema/Recruiter');
 
 exports.createQuestion = async (req, res) => {

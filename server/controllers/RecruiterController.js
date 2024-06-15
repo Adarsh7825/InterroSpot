@@ -2,7 +2,7 @@ const Recruiter = require("../DB/Schema/Recruiter");
 const mailSender = require("../utils/mailSenderForAllCandidate");
 const User = require('../DB/Schema/user');
 const InterviewSession = require('../DB/Schema/InterviewSessionSchema');
-const Room = require('../DB/Schema/Room');
+const Room = require('../DB/Schema/room');
 const randomString = require('randomstring');
 const Codes = require('../utils/constants/default_code.json');
 
