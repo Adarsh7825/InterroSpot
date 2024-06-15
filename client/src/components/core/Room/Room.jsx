@@ -11,7 +11,8 @@ import { useDispatch, useSelector } from "react-redux";
 import Ace from "./Ace";
 import VideoChat from "./VideoChat";
 import { executeCode } from "../../../services/operations/executeCode";
-import StarRatingComponent from 'react-star-rating-component';
+import StarRatingComponent from 'react-rating-stars-component';
+import { FaStar } from "react-icons/fa"
 import jsPDF from 'jspdf';
 import { ACCOUNT_TYPE } from "../../../utils/constants";
 
