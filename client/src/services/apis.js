@@ -6,6 +6,14 @@ export const endpoints = {
     LOGIN_API: BASE_URL + "/auth/login",
     RESETPASSTOKEN_API: BASE_URL + "/auth/reset-password-token",
     RESETPASSWORD_API: BASE_URL + "/auth/reset-password",
+    FETCH_ROOM_API: BASE_URL + "/rooms/fetch",
+    ROOM_UPDATE_API: BASE_URL + "/rooms/update",
+    UPLOAD_IMAGE_CANDIDATE_API: BASE_URL + "/captureImage/uploadImage",
+    UPLOAD_IMAGE_INTERVIEWER_API: BASE_URL + "/captureImage/uploadImageforInterviewer",
+    FETCH_QUESTIONS_API: BASE_URL + "/question/getQuestions",
+    FETCH_CANDIDATE_IMAGE_API: BASE_URL + "/captureImage/fetchImage",
+    FETCH_INTERVIEWER_IMAGE_API: BASE_URL + "/captureImage/fetchImage",
+    FETCH_JOB_POSITION_API: BASE_URL + "/recruiter/getjobposition",
 }
 
 export const profileEndpoints = {

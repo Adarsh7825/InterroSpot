@@ -1,12 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { DataContext } from '../../../context/DataContext';
 import { generateFromString } from 'generate-avatar';
-import axios from 'axios';
 import CameraCapture from './CameraCapture';
+import { fetchRoom } from '../../../services/operations/roomAPI';
 
 const RoomData = () => {
     const { setCurrRoom, setUser, socket } = useContext(DataContext);
@@ -15,7 +15,7 @@ const RoomData = () => {
     const { user } = useSelector((state) => state.profile);
     const { roomId } = useParams();
     const navigate = useNavigate();
-    const REACT_APP_BACKEND_URL = 'http://localhost:8181/';
+    const dispatch = useDispatch();
 
     function loadingStart() {
         setIsLoading(true);
@@ -40,26 +40,19 @@ const RoomData = () => {
         }
 
         loadingStart();
-        axios({
-            method: 'get',
-            url: `${REACT_APP_BACKEND_URL}rooms/fetch?id=${roomId}`,
-            headers: {
-                Authorization: `Bearer ${user.token}`
-            }
-        })
-            .then((response) => {
-                setCurrRoom(response.data);
-                socket.emit('joinRoom', { roomId, user });
-                loadingStop();
-                navigate(`/room/${roomId}`, { state: { roomid: roomId } });
-            })
-            .catch((error) => {
-                loadingStop();
-                toast.error('Room not found', {
-                    // position: toast.POSITION.TOP_RIGHT
-                });
-                console.log(error);
+        try {
+            const roomData = dispatch(fetchRoom(roomId, user.token));
+            setCurrRoom(roomData);
+            socket.emit('joinRoom', { roomId, user });
+            navigate(`/room/${roomId}`, { state: { roomid: roomId } });
+        } catch (error) {
+            toast.error('Room not found', {
+                // position: toast.POSITION.TOP_RIGHT
             });
+            console.log(error);
+        } finally {
+            loadingStop();
+        }
     };
 
     const copyRoomId = (e) => {

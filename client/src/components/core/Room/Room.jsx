@@ -1,20 +1,19 @@
-import { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { DataContext } from '../../../context/DataContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { diff_match_patch } from 'diff-match-patch';
 import defaultCode from './../../../static/default_code.json';
-import axios from 'axios';
-import WhiteBoard from './WhiteBoard';
 import { useDispatch, useSelector } from "react-redux";
 import Ace from "./Ace";
 import VideoChat from "./VideoChat";
 import { executeCode } from "../../../services/operations/executeCode";
 import StarRatingComponent from 'react-rating-stars-component';
-import { FaStar } from "react-icons/fa"
 import jsPDF from 'jspdf';
 import { ACCOUNT_TYPE } from "../../../utils/constants";
+import WhiteBoard from "./WhiteBoard";
+import { fetchQuestions, fetchCandidateImage, fetchInterviewerImage, fetchJobPosition } from "../../../services/operations/roomAPI";
 
 const dmp = new diff_match_patch();
 
@@ -35,7 +34,6 @@ const Room = () => {
     const [inRoomUsers, setInRoomUsers] = useState([]);
     const [running, setRunning] = useState(false);
     const EditorRef = useRef(null);
-    const REACT_APP_BACKEND_URL = 'http://localhost:8181/';
     const [questions, setQuestions] = useState([]);
     const [overallFeedback, setOverallFeedback] = useState(null);
     const [newQuestionText, setNewQuestionText] = useState('');
@@ -260,9 +258,8 @@ const Room = () => {
 
             // Add the candidate photo
             const candidateImg = new Image();
-            const candidateResponse = await axios.get(`${REACT_APP_BACKEND_URL}api/v1/captureImage/fetchImage/${roomid}`);
-            console.log('Candidate Image URL:', candidateResponse.data.room.imageUrl);
-            candidateImg.src = candidateResponse.data.room.imageUrl;
+            const candidateImageUrl = await fetchCandidateImage(roomid);
+            candidateImg.src = candidateImageUrl;
 
             // Ensure the image is loaded before adding it to the PDF
             await new Promise((resolve) => {
@@ -273,9 +270,8 @@ const Room = () => {
 
             // Add the interviewer photo
             const interviewerImg = new Image();
-            const interviewerResponse = await axios.get(`${REACT_APP_BACKEND_URL}api/v1/captureImage/fetchImage/${roomid}`);
-            console.log('Interviewer Image URL:', interviewerResponse.data.room.imageUrlforInterviewer);
-            interviewerImg.src = interviewerResponse.data.room.imageUrlforInterviewer;
+            const interviewerImageUrl = await fetchInterviewerImage(roomid);
+            interviewerImg.src = interviewerImageUrl;
 
             // Ensure the image is loaded before adding it to the PDF
             await new Promise((resolve) => {
@@ -327,9 +323,8 @@ const Room = () => {
                 doc.text(`Candidate Email: ${user.email}`, 10, yOffset + lineHeight * 3);
             }
             // Add the position applying for
-            const getJobPosition = await axios.get(`${REACT_APP_BACKEND_URL}api/v1/recruiter/getjobposition/${roomid}`)
-            console.log(getJobPosition.data)
-            doc.text(`Position Applied : ${getJobPosition.data}`, 10, yOffset + lineHeight * 4);
+            const jobPosition = await fetchJobPosition(roomid);
+            doc.text(`Position Applied: ${jobPosition}`, 10, yOffset + lineHeight * 4);
 
             // Add the interviewer name and email and Jobposition
             if (user?.accountType !== ACCOUNT_TYPE.CANDIDATE) {
@@ -351,22 +346,16 @@ const Room = () => {
 
     useEffect(() => {
         // Fetch questions based on room ID
-        const fetchQuestions = async () => {
+        const fetchQuestionsData = async () => {
             try {
-                const response = await axios.get(`${REACT_APP_BACKEND_URL}api/v1/question/getQuestions/${roomid}`);
-                console.log('Questions:', response.data[0].text)
-                console.log('Questions:', response.data[0].mainCategory)
-                console.log('Questions:', response.data[0].subCategory)
-                console.log('Questions:', response.data[0].difficulty)
-                console.log('Questions:', response.data[0].tags)
-                setQuestions(response.data);
+                const questionsData = await fetchQuestions(roomid);
+                setQuestions(questionsData);
             } catch (error) {
                 console.error('Error fetching questions:', error);
-                toast.error('Error fetching questions');
             }
         };
 
-        fetchQuestions();
+        fetchQuestionsData();
     }, [roomid]);
 
     const handleStarClick = (nextValue, prevValue, name) => {

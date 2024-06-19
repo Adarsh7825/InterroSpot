@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AceEditor from 'react-ace';
-import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
 import { diff_match_patch } from 'diff-match-patch';
+import { updateRooms } from '../../../services/operations/roomAPI';
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/mode-java';
 import 'ace-builds/src-noconflict/mode-python';
@@ -20,7 +21,6 @@ import 'ace-builds/src-noconflict/theme-tomorrow_night';
 import 'ace-builds/src-noconflict/theme-vibrant_ink';
 import 'ace-builds/src-noconflict/theme-one_dark';
 import 'ace-builds/src-noconflict/ext-language_tools';
-import { useSelector } from 'react-redux';
 import Settings from './Settings';
 
 const Ace = ({
@@ -38,12 +38,12 @@ const Ace = ({
     running,
     run
 }) => {
+    const dispatch = useDispatch();
     const dmp = new diff_match_patch();
     const [theme, setTheme] = useState('monokai');
     const [fontSize, setFontSize] = useState(18);
     const [fontFamily, setFontFamily] = useState('monospace');
     const sent = useRef(true);
-    const REACT_APP_BACKEND_URL = 'http://localhost:8181/';
     const { user } = useSelector((state) => state.profile);
 
     // Ensure code is initialized
@@ -54,31 +54,12 @@ const Ace = ({
 
         sent.current = false;
         const sendData = setTimeout(() => {
-            axios({
-                method: 'patch',
-                url: `${REACT_APP_BACKEND_URL}rooms/update`,
-                headers: {
-                    'Authorization': `Bearer ${user.token}`,
-                },
-                data: {
-                    'room': {
-                        roomid,
-                        code,
-                        language
-                    },
-                }
-            })
-                .then((res) => {
-                    console.log("patched successfully", res)
-                })
-                .catch((err) => {
-                    console.log("error from axios", err)
-                })
+            dispatch(updateRooms(roomid, code, language, user.token));
             sent.current = true;
-        }, 2000)
-        console.log("sendData", sendData)
+        }, 2000);
+        console.log("sendData", sendData);
 
-    }, [code])
+    }, [code]);
 
     function handleChange(newValue, event) {
         if (initializedCode === undefined) {

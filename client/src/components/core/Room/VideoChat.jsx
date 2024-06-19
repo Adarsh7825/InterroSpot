@@ -13,7 +13,6 @@ const VideoChat = ({ socket, roomid, user, userVideo, closeIt }) => {
     const [video, setVideo] = useState(true);
     const [screen, setScreen] = useState(false);
     const guestName = useRef(null);
-    const peer = new Peer();
 
     const muteVideo = () => {
         setVideo(!video);
@@ -26,14 +25,15 @@ const VideoChat = ({ socket, roomid, user, userVideo, closeIt }) => {
     function quitVideoCall() {
         socket.emit("quit-video", { roomId: roomid, peerId });
         closeIt();
-        peerInstance.current.destroy();
+        if (peerInstance.current) {
+            peerInstance.current.destroy();
+        }
         setScreen(false);
     }
 
     function startCall() {
         socket.emit('Id', { roomid, peerId, name: user.name });
         setScreen(true);
-        peerInstance.current = peer;
         document.querySelectorAll(".user-video").forEach(video => {
             video.classList.add("active");
         });
@@ -41,7 +41,7 @@ const VideoChat = ({ socket, roomid, user, userVideo, closeIt }) => {
     }
 
     const call = () => {
-        let getUserMedia = navigator.getUserMedia;
+        let getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
         getUserMedia({ video: true, audio: true }, (mediaStream) => {
             userVideo.current.srcObject = mediaStream;
@@ -65,12 +65,14 @@ const VideoChat = ({ socket, roomid, user, userVideo, closeIt }) => {
     }
 
     useEffect(() => {
-        peer.on('open', (id) => {
+        peerInstance.current = new Peer();
+
+        peerInstance.current.on('open', (id) => {
             setPeerId(id);
         });
 
-        peer.on('call', (call) => {
-            let getUserMedia = navigator.getUserMedia;
+        peerInstance.current.on('call', (call) => {
+            let getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
             getUserMedia({ video: true, audio: true }, (mediaStream) => {
                 userVideo.current.srcObject = mediaStream;
@@ -104,11 +106,15 @@ const VideoChat = ({ socket, roomid, user, userVideo, closeIt }) => {
             }
         });
 
-        peer.on("close", () => {
+        peerInstance.current.on("close", () => {
             console.log("peer closed");
         });
 
-        peerInstance.current = peer;
+        return () => {
+            if (peerInstance.current) {
+                peerInstance.current.destroy();
+            }
+        };
     }, [roomid]);
 
     useEffect(() => {

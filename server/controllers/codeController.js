@@ -23,7 +23,7 @@ const languageMap = {
         name: "csharp",
         version: 4,
     },
-    javascript: {
+    nodejs: {
         name: "nodejs",
         version: 4,
     },
@@ -36,6 +36,12 @@ const languageMap = {
 exports.execute = async (req, res) => {
     try {
         let { code, language } = req.body;
+        if (language === undefined) {
+            language = 'nodejs'
+        }
+        if (language === "javascript") {
+            language = "nodejs";
+        }
         const stdin = req.body.input || "";
         console.log('Received Code:', code);
         console.log('Received Language:', language);

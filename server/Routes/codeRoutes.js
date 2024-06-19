@@ -6,6 +6,6 @@ const { isAdmin, isCandidate, isInterviewer, isRecruiter } = require('../middlew
 const codeRouter = new express.Router();
 
 // Ensure the URL and middleware/controller are correctly referenced
-codeRouter.post('/execute-code', validateCode, execute);
+codeRouter.post('/execute-code', execute);
 
 module.exports = codeRouter;

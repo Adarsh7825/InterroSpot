@@ -1,12 +1,14 @@
 import React, { useRef, useState, useEffect } from 'react';
-import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { ACCOUNT_TYPE } from '../../../utils/constants';
-import { useSelector } from 'react-redux';
+import { uploadPhotoForCandidate, uploadPhotoForInterviewer } from '../../../services/operations/uploadAPI';
 
 const CameraCapture = ({ onCapture, roomId }) => {
     const videoRef = useRef(null);
     const [capturedImage, setCapturedImage] = useState(null);
     const user = useSelector((state) => state.profile.user);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         return () => {
@@ -39,59 +41,13 @@ const CameraCapture = ({ onCapture, roomId }) => {
         onCapture(imageData);
     };
 
-    const uploadPhotoforCandidate = async () => {
+    const uploadPhoto = async () => {
         const blob = await fetch(capturedImage).then(res => res.blob());
-        const formData = new FormData();
-        formData.append('imageUrl', blob, 'photo.png'); // Ensure the key matches the backend expectation
 
-        try {
-            const response = await axios.post(`http://localhost:8181/api/v1/captureImage/uploadImage/${roomId}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-
-            console.log('File uploaded successfully:', response.data);
-
-            if (response.data && response.data.room && response.data.room.imageUrl) {
-                console.log('Image URL:', response.data.room.imageUrl);
-            } else {
-                console.error('Unexpected response structure:', response.data);
-            }
-        } catch (error) {
-            console.error('Error uploading file:', error);
-        }
-    };
-
-    const uploadPhotoforInterviewer = async () => {
-        const blob = await fetch(capturedImage).then(res => res.blob());
-        const formData = new FormData();
-        formData.append('imageUrl', blob, 'photo.png'); // Ensure the key matches the backend expectation
-
-        try {
-            const response = await axios.post(`http://localhost:8181/api/v1/captureImage/uploadImageforInterviewer/${roomId}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-
-            console.log('File uploaded successfully:', response.data);
-
-            if (response.data && response.data.room && response.data.room.imageUrl) {
-                console.log('Image URL:', response.data.room.imageUrlforInterviewer);
-            } else {
-                console.error('Unexpected response structure:', response.data);
-            }
-        } catch (error) {
-            console.error('Error uploading file:', error);
-        }
-    };
-
-    const uploadPhoto = () => {
         if (user.accountType === ACCOUNT_TYPE.CANDIDATE) {
-            uploadPhotoforCandidate();
+            dispatch(uploadPhotoForCandidate(roomId, blob));
         } else {
-            uploadPhotoforInterviewer();
+            dispatch(uploadPhotoForInterviewer(roomId, blob));
         }
     };
 

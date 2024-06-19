@@ -1,4 +1,4 @@
-const supportedLanguages = ['c_cpp', 'java', 'python', 'nodejs', 'golang', 'csharp', 'rust', 'kotlin', 'scala', 'swift', 'ruby', 'perl', 'haskell', 'bash', 'r', 'lua', 'php', 'typescript', 'coffeescript', 'clojure', 'groovy', 'fsharp', 'd', 'elixir', 'nim', 'erlang', 'crystal', 'cobol', 'fortran', 'julia', 'scheme', 'ocaml', 'pascal', 'racket', 'smalltalk', 'tcl', 'visualbasic'];
+const supportedLanguage = ['c_cpp', 'java', 'python', 'nodejs', 'golang', 'csharp', 'rust']
 
 const validateCode = async (req, res, next) => {
     try {
@@ -10,7 +10,7 @@ const validateCode = async (req, res, next) => {
         if (!code || !language) {
             return res.status(400).send({ message: "Bad Request" });
         }
-        if (!supportedLanguages.includes(language)) {
+        if (!supportedLanguage.includes(language)) {
             return res.status(400).send({ message: "Language not supported" });
         }
         req.body.language = language;
