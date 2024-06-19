@@ -9,11 +9,12 @@ import { useDispatch, useSelector } from "react-redux";
 import Ace from "./Ace";
 import VideoChat from "./VideoChat";
 import { executeCode } from "../../../services/operations/executeCode";
-import StarRatingComponent from 'react-rating-stars-component';
-import jsPDF from 'jspdf';
 import { ACCOUNT_TYPE } from "../../../utils/constants";
 import WhiteBoard from "./WhiteBoard";
-import { fetchQuestions, fetchCandidateImage, fetchInterviewerImage, fetchJobPosition } from "../../../services/operations/roomAPI";
+import { fetchQuestions } from "../../../services/operations/roomAPI";
+import UserList from "./UserList";
+import QuestionList from "./QuestionList";
+import GeneratePDF from "./GeneratePDF";
 
 const dmp = new diff_match_patch();
 
@@ -251,99 +252,6 @@ const Room = () => {
         navigate('/');
     }
 
-    async function generatePDF() {
-        try {
-            console.log('Generating PDF...');
-            const doc = new jsPDF();
-
-            // Add the candidate photo
-            const candidateImg = new Image();
-            const candidateImageUrl = await fetchCandidateImage(roomid);
-            candidateImg.src = candidateImageUrl;
-
-            // Ensure the image is loaded before adding it to the PDF
-            await new Promise((resolve) => {
-                candidateImg.onload = resolve;
-            });
-
-            doc.addImage(candidateImg.src, 'JPEG', 10, 10, 50, 50);
-
-            // Add the interviewer photo
-            const interviewerImg = new Image();
-            const interviewerImageUrl = await fetchInterviewerImage(roomid);
-            interviewerImg.src = interviewerImageUrl;
-
-            // Ensure the image is loaded before adding it to the PDF
-            await new Promise((resolve) => {
-                interviewerImg.onload = resolve;
-            });
-
-            doc.addImage(interviewerImg.src, 'JPEG', 70, 10, 50, 50); // Adjust coordinates to avoid overlap
-
-            // Add the questions and ratings
-            let yOffset = 70;
-            const pageHeight = doc.internal.pageSize.height;
-            const lineHeight = 10;
-            const margin = 10;
-
-            questions.forEach((question, index) => {
-                if (yOffset + lineHeight * 4 > pageHeight - margin) {
-                    doc.addPage();
-                    yOffset = margin;
-                }
-                doc.text(`Question ${index + 1}: ${question.text}`, 10, yOffset);
-                yOffset += lineHeight;
-                doc.text(`Rating: ${question.feedback}`, 10, yOffset);
-                yOffset += lineHeight;
-                doc.text(`Strength: ${question.strength}`, 10, yOffset);
-                yOffset += lineHeight;
-                doc.text(`Ease of Improvement: ${question.improvement}`, 10, yOffset);
-                yOffset += lineHeight * 2;
-            });
-
-            // Add the final verdict
-            if (yOffset + lineHeight > pageHeight - margin) {
-                doc.addPage();
-                yOffset = margin;
-            }
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text(`Final Verdict: ${overallFeedback}`, 10, yOffset);
-
-            // Add the interview date and time
-            const date = new Date();
-            const formattedDate = date.toLocaleDateString();
-            doc.setFontSize(12);
-            doc.setFont('helvetica', 'normal');
-            doc.text(`Interview Date: ${formattedDate}`, 10, yOffset + lineHeight);
-
-            // Add the candidate name and email
-            if (user?.accountType === ACCOUNT_TYPE.CANDIDATE) {
-                doc.text(`Candidate Name: ${user.firstName} ${user.lastName}`, 10, yOffset + lineHeight * 2);
-                doc.text(`Candidate Email: ${user.email}`, 10, yOffset + lineHeight * 3);
-            }
-            // Add the position applying for
-            const jobPosition = await fetchJobPosition(roomid);
-            doc.text(`Position Applied: ${jobPosition}`, 10, yOffset + lineHeight * 4);
-
-            // Add the interviewer name and email and Jobposition
-            if (user?.accountType !== ACCOUNT_TYPE.CANDIDATE) {
-                doc.text(`Interviewer Name: ${user.firstName}`, 10, yOffset + lineHeight * 5);
-                doc.text(`Interviewer Email: ${user.email}`, 10, yOffset + lineHeight * 6);
-            }
-
-            // Add the openplayback
-            doc.text(`Openplayback: link`, 10, yOffset + lineHeight * 8);
-
-            // Save the PDF
-            doc.save('assessment.pdf');
-            console.log('PDF saved');
-        } catch (error) {
-            console.error('Error generating PDF:', error);
-            toast.error('Error generating PDF');
-        }
-    }
-
     useEffect(() => {
         // Fetch questions based on room ID
         const fetchQuestionsData = async () => {
@@ -411,7 +319,7 @@ const Room = () => {
         if (allRated) {
             const feedback = calculateOverallFeedback(questions);
             setOverallFeedback(feedback);
-            // toast.success(`Overall Feedback: ${feedback}`);
+            // toast.success(Overall Feedback: ${feedback});
         }
     }, [questions]);
 
@@ -428,27 +336,11 @@ const Room = () => {
 
     if (user.rooms && user) {
         return (
-            <div style={{ color: 'white', display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
-                <button id="leave-room" onClick={leaveRoom}>Leave Room</button>
-                {user.accountType !== ACCOUNT_TYPE.CANDIDATE && <button id="generate-pdf" onClick={generatePDF}>Generate PDF</button>}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem', gap: '2rem' }}>
-                    {inRoomUsers.map((user) => (
-                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }} key={user.id}>
-                            <img src={user.avatar} alt="" style={{ borderRadius: '50%', width: '40px', height: '40px' }} />
-                            <div style={{
-                                position: 'absolute',
-                                left: '100%',
-                                marginLeft: '0.5rem',
-                                padding: '0.25rem',
-                                backgroundColor: '#fff',
-                                color: '#000',
-                                borderRadius: '5px',
-                                opacity: 0,
-                                transition: 'opacity 0.3s ease-in-out'
-                            }}>{user.firstName}</div>
-                        </div>
-                    ))}
-                </div>
+            <div className="room-container">
+                <button id="leave-room" className="text-white" onClick={leaveRoom}>Leave Room</button>
+                <br></br>
+                {user.accountType !== ACCOUNT_TYPE.CANDIDATE && <GeneratePDF roomid={roomid} questions={questions} overallFeedback={overallFeedback} />}
+                <UserList inRoomUsers={inRoomUsers} />
                 <Ace
                     updateRoom={updateRoom}
                     code={code}
@@ -465,43 +357,8 @@ const Room = () => {
                     run={run}
                     running={running}
                 />
-                <div id="resize-editor" style={{
-                    width: '15px',
-                    height: '100%',
-                    backgroundColor: 'rgb(146, 228, 255)',
-                    float: 'right',
-                    cursor: 'col-resize',
-                    transition: 'all 0.1s linear',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    boxShadow: '5px 0 10px rgba(0, 0, 0, 0.5)'
-                }}>
-                    <div id="lines-resize" style={{
-                        height: '25px',
-                        backgroundColor: 'black',
-                        width: '1px',
-                        position: 'relative'
-                    }}>
-                        <div style={{
-                            content: '""',
-                            height: '100%',
-                            width: '100%',
-                            position: 'absolute',
-                            left: '300%',
-                            top: 0,
-                            backgroundColor: 'black'
-                        }}></div>
-                        <div style={{
-                            content: '""',
-                            height: '100%',
-                            width: '100%',
-                            position: 'absolute',
-                            left: '-300%',
-                            top: 0,
-                            backgroundColor: 'black'
-                        }}></div>
-                    </div>
+                <div id="resize-editor" className="resize-editor">
+                    <div id="lines-resize" className="lines-resize"></div>
                 </div>
                 <VideoChat
                     socket={socket}
@@ -512,55 +369,7 @@ const Room = () => {
                 />
                 <WhiteBoard roomId={roomid} socket={socket} />
                 <ToastContainer autoClose={2000} />
-                {user.accountType !== ACCOUNT_TYPE.CANDIDATE && <div style={{ color: 'white', display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
-                    <h2>Questions</h2>
-                    {questions.map((question, index) => (
-                        <div key={index} style={{ marginBottom: '1rem' }}>
-                            <h3>{question.text}</h3>
-                            <StarRatingComponent
-                                name={`${index}`}
-                                starCount={10}
-                                value={question.feedback || 0}
-                                onStarClick={handleStarClick}
-                            />
-                            <div>
-                                <label>Strength:</label>
-                                <input
-                                    type="text"
-                                    value={question.strength || ''}
-                                    onChange={(e) => handleInputChange(index, 'strength', e.target.value)}
-                                    placeholder="Enter strength"
-                                    style={{ padding: '0.5rem', width: '80%' }}
-                                />
-                            </div>
-                            <div>
-                                <label>Ease of Improvement:</label>
-                                <input
-                                    type="text"
-                                    value={question.improvement || ''}
-                                    onChange={(e) => handleInputChange(index, 'improvement', e.target.value)}
-                                    placeholder="Enter ease of improvement"
-                                    style={{ padding: '0.5rem', width: '80%' }}
-                                />
-                            </div>
-                        </div>
-                    ))}
-                    {overallFeedback && (
-                        <div>
-                            <h3>Overall Feedback: {overallFeedback}</h3>
-                        </div>
-                    )}
-                    <div style={{ marginTop: '2rem' }}>
-                        <input
-                            type="text"
-                            value={newQuestionText}
-                            onChange={(e) => setNewQuestionText(e.target.value)}
-                            placeholder="Enter new question"
-                            style={{ padding: '0.5rem', width: '80%' }}
-                        />
-                        <button onClick={addQuestion} className="">Add Question</button>
-                    </div>
-                </div>}
+                {user.accountType !== ACCOUNT_TYPE.CANDIDATE && <QuestionList questions={questions} handleStarClick={handleStarClick} handleInputChange={handleInputChange} overallFeedback={overallFeedback} newQuestionText={newQuestionText} setNewQuestionText={setNewQuestionText} addQuestion={addQuestion} />}
             </div>
         )
     }
