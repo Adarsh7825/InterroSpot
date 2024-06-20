@@ -28,44 +28,41 @@ function CreateInterviewByRecruiter() {
 
     const handleInputChange = (e, index = null, field = null, subField = null) => {
         if (index !== null && field && subField) {
-            // Handling changes in arrays with subFields (like jobPositions and candidates)
             const updatedItems = [...formState[field]];
             if (subField === 'requiredSkills') {
-                // Assuming skills are comma-separated
                 updatedItems[index][subField] = e.target.value.split(',');
             } else {
-                // Directly updating subFields within arrays (like name and phone in candidates)
                 updatedItems[index][subField] = e.target.value;
             }
             setFormState({ ...formState, [field]: updatedItems });
         } else if (field && !subField) {
-            // Directly updating fields within formState that are not arrays
             setFormState({
                 ...formState,
                 [field]: e.target.value,
             });
         } else {
-            // Fallback for any other cases, if needed
             console.error('Unexpected input change scenario');
         }
     };
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        Papa.parse(file, {
-            complete: function (results) {
-                const candidates = results.data.map(candidate => ({
-                    email: candidate[0],
-                    name: candidate[1],
-                    phone: candidate[2],
-                }));
-                setFormState(prevState => ({
-                    ...prevState,
-                    candidates: [...prevState.candidates, ...candidates],
-                }));
-            },
-            header: false,
-        });
+        if (file) {
+            Papa.parse(file, {
+                complete: function (results) {
+                    const candidates = results.data.map(candidate => ({
+                        email: candidate[0],
+                        name: candidate[1],
+                        phone: candidate[2],
+                    }));
+                    setFormState(prevState => ({
+                        ...prevState,
+                        candidates: [...prevState.candidates, ...candidates],
+                    }));
+                },
+                header: false,
+            });
+        }
     };
 
     const addCandidateField = () => {
@@ -88,9 +85,11 @@ function CreateInterviewByRecruiter() {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="text-caribbeangreen-200 shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold mb-6 text-gray-800">Create Interview</h2>
+
             {/* Company Name Input */}
-            <div className="mb-4">
+            <div className="mb-6">
                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="company">
                     Company Name:
                 </label>
@@ -106,7 +105,7 @@ function CreateInterviewByRecruiter() {
 
             {/* Job Position Inputs */}
             {formState.jobPositions.map((position, index) => (
-                <div key={index} className="mb-4">
+                <div key={index} className="mb-6">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                         Job Position:
                     </label>
@@ -116,13 +115,13 @@ function CreateInterviewByRecruiter() {
                         placeholder="Title"
                         value={position.title}
                         onChange={(e) => handleInputChange(e, index, 'jobPositions', 'title')}
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
                     />
                     <select
                         name="category"
                         value={position.category}
                         onChange={(e) => handleInputChange(e, index, 'jobPositions', 'category')}
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
                     >
                         <option value="">Select Category</option>
                         <option value="frontend">Frontend</option>
@@ -135,7 +134,7 @@ function CreateInterviewByRecruiter() {
                         placeholder="Description"
                         value={position.description}
                         onChange={(e) => handleInputChange(e, index, 'jobPositions', 'description')}
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
                     />
                     <input
                         type="text"
@@ -150,43 +149,47 @@ function CreateInterviewByRecruiter() {
 
             {/* Candidate Inputs */}
             {formState.candidates.map((candidate, index) => (
-                <div key={index}>
-                    <label>Candidate Email:</label>
+                <div key={index} className="mb-6">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">Candidate Email:</label>
                     <input
                         type="email"
                         name="email"
                         value={candidate.email}
-                        onChange={(e) => handleInputChange(e, index, 'candidates', 'email')} className='border-black text-black'
+                        onChange={(e) => handleInputChange(e, index, 'candidates', 'email')}
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
                     />
-                    <label>Name:</label>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">Name:</label>
                     <input
                         type="text"
                         name="name"
                         value={candidate.name}
                         onChange={(e) => handleInputChange(e, index, 'candidates', 'name')}
-                        className='text-black'
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
                     />
-                    <label>Phone:</label>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">Phone:</label>
                     <input
                         type="text"
                         name="phone"
                         value={candidate.phone}
                         onChange={(e) => handleInputChange(e, index, 'candidates', 'phone')}
-                        className='text-black'
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
                     />
-                    <button type="button" onClick={() => removeCandidateField(index)}>Remove</button>
+                    <button type="button" onClick={() => removeCandidateField(index)} className="text-red-500 hover:text-red-700">Remove</button>
                 </div>
             ))}
-            <button type="button" onClick={addCandidateField}>Add Another Candidate</button>
-            <div>
-                <label>Upload Candidates CSV:</label>
+            <button type="button" onClick={addCandidateField} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-6">Add Another Candidate</button>
+
+            {/* File Upload */}
+            <div className="mb-6">
+                <label className="block text-gray-700 text-sm font-bold mb-2">Upload Candidates CSV:</label>
                 <input
                     type="file"
                     accept=".csv"
                     onChange={handleFileChange}
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
                 />
             </div>
-            <button type="submit">Submit</button>
+            <button type="submit" className="bg-black text-whitey font-bold py-2 px-4 rounded">Submit</button>
         </form>
     );
 }
