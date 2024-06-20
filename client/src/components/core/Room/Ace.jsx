@@ -22,6 +22,7 @@ import 'ace-builds/src-noconflict/theme-vibrant_ink';
 import 'ace-builds/src-noconflict/theme-one_dark';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import Settings from './Settings';
+import useDebouncedEffect from './useDebouncedEffect';
 
 const Ace = ({
     updateRoom,
@@ -43,47 +44,37 @@ const Ace = ({
     const [theme, setTheme] = useState('monokai');
     const [fontSize, setFontSize] = useState(18);
     const [fontFamily, setFontFamily] = useState('monospace');
-    const sent = useRef(true);
     const { user } = useSelector((state) => state.profile);
 
     // Ensure code is initialized
     const [initializedCode, setInitializedCode] = useState(code || '');
 
-    useEffect(() => {
-        if (!sent.current) return;
-
-        sent.current = false;
-        const sendData = setTimeout(() => {
+    useDebouncedEffect(() => {
+        if (initializedCode !== undefined) {
             dispatch(updateRooms(roomid, code, language, user.token));
-            sent.current = true;
-        }, 2000);
-        console.log("sendData", sendData);
+        }
+    }, [code], 2000);
 
-    }, [code]);
-
-    function handleChange(newValue, event) {
+    const handleChange = (newValue) => {
         if (initializedCode === undefined) {
             console.error('Old Value is undefined');
             return;
         }
         const patch = dmp.patch_make(initializedCode, newValue);
-        console.log('Generated patch:', patch);
         setInitializedCode(newValue);
         updateRoom(patch);
         setCode(newValue);
-        console.log('Updated code:', newValue);
-    }
+    };
 
     const handleIOChange = (newValue) => {
         setInput(newValue);
         IOEMIT(newValue, output, language);
     };
 
-    function handleLangChange(e) {
-        // save this code in localsotrage in roomid
+    const handleLangChange = (e) => {
         setLanguage(e);
         IOEMIT(input, output, e);
-    }
+    };
 
     return (
         <div id="editor">
