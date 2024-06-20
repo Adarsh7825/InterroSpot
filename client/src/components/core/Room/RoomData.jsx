@@ -55,14 +55,6 @@ const RoomData = () => {
         }
     };
 
-    const copyRoomId = (e) => {
-        const id = e.target.innerText;
-        navigator.clipboard.writeText(id);
-        toast.success('Room ID Copied ', {
-            // position: toast.POSITION.TOP_RIGHT
-        });
-    };
-
     useEffect(() => {
         if (user && !user.rooms.every(room => !room.updatedAt.includes("T"))) {
             user.rooms.forEach((item) => {
@@ -89,20 +81,23 @@ const RoomData = () => {
     }, [user]);
 
     return (
-        <div>
-            <div className="room-data text-white">
-                <div className="userData">
-                    {user.avatar ?
-                        <img src={user.avatar} height={100} alt='user profile' style={{ borderRadius: '50%', width: '5rem', height: '5rem' }} />
-                        : <img height={100} src={`data:image/svg+xml;utf8,${generateFromString(user.email + user.name)}`} alt="user profile" style={{ borderRadius: '50%', width: '5rem', height: '5rem' }} />
-                    }
-                </div>
-                <div className="join-room">
-                    <div>
-                        <button onClick={() => joinRoom(roomId)}>Join Room</button>
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
+            <div className="w-full max-w-md p-4 bg-gray-800 rounded-lg shadow-md">
+                <div className="flex flex-col items-center">
+                    <div className="mb-4">
+                        {user.avatar ?
+                            <img src={user.avatar} alt='user profile' className="rounded-full w-20 h-20" />
+                            : <img src={`data:image/svg+xml;utf8,${generateFromString(user.email + user.name)}`} alt="user profile" className="rounded-full w-20 h-20" />
+                        }
                     </div>
+                    <CameraCapture onCapture={setCapturedPhoto} roomId={roomId} />
+                    <button
+                        onClick={() => joinRoom(roomId)}
+                        className="mt-4 px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                    >
+                        Join Room
+                    </button>
                 </div>
-                <CameraCapture onCapture={setCapturedPhoto} roomId={roomId} />
             </div>
         </div>
     );

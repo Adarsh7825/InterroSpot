@@ -166,7 +166,7 @@ const VideoChat = ({ socket, roomid, user, userVideo, closeIt }) => {
     return (
         <Draggable>
             <div className="video-chat flex flex-col items-center w-full max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl h-auto md:h-64 lg:h-80 xl:h-96 absolute top-2 right-2 bg-black bg-opacity-80 rounded-lg p-4">
-                {!isOppositeUserTabActive && (
+                {screen && !isOppositeUserTabActive && (
                     <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-75 text-white text-lg font-semibold">
                         user is on another tab
                     </div>

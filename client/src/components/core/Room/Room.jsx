@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch, useSelector } from "react-redux";
 import Ace from "./Ace";
+import defaultCode from '../../../static/default_code.json';
 import VideoChat from "./VideoChat";
 import { executeCode } from "../../../services/operations/executeCode";
 import { ACCOUNT_TYPE } from "../../../utils/constants";
@@ -23,7 +24,7 @@ const Room = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [language, setLanguage] = useState(currRoom ? currRoom.language : "javascript");
-    let [code, setCode] = useState(currRoom ? currRoom.code : defaultCode[language ? language : "javascript"]);
+    let [code, setCode] = useState(currRoom ? currRoom.code : defaultCode[language ? language : "javascript"].snippet);
     const location = useLocation();
     let roomid = location.state?.roomid;
     let name = user ? user.firstName : "";
@@ -93,7 +94,6 @@ const Room = () => {
             setRunning(false);
         }
     };
-
 
     const addQuestion = () => {
         if (newQuestionText.trim() !== '') {

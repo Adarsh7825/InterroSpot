@@ -111,12 +111,12 @@ const Home = () => {
 
 
                     <div className='flex flex-row gap-7 mt-8'>
-                        <CTAButton active={true} linkto={"/signup"}>
+                        <CTAButton active={true} linkto={"/about"}>
                             Learn More
                         </CTAButton>
 
-                        <CTAButton active={false} linkto={"/login"}>
-                            Book a Demo
+                        <CTAButton active={false} linkto={"/dashboard/form"}>
+                            Create Interview
                         </CTAButton>
                     </div>
                 </div>
