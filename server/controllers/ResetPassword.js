@@ -2,6 +2,7 @@ const User = require("../DB/Schema/user");
 const mailSender = require("../utils/mailSender");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const baseUrl = process.env.BASE_URL;
 
 //resetPasswordToken
 exports.resetPasswordToken = async (req, res) => {
@@ -31,7 +32,7 @@ exports.resetPasswordToken = async (req, res) => {
             { new: true });
 
         //create url
-        const url = `http://localhost:3000/update-password/${token}`
+        const url = `${baseUrl}/update-password/${token}`
 
         //send mail containing the url
         await mailSender(email,

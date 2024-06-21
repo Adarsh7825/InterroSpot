@@ -46,18 +46,15 @@ const Settings = ({
     theme,
     fontSize,
     fontFamily,
-    roomName,
     run,
     handleLangChange,
-    roomid,
     running
 }) => {
+    ``
     return (
         <div className="editor-setting">
             <div className="bg-gray-800 text-white p-4 flex items-center justify-between">
                 <div>
-                    <h5 className="text-xl">{roomName}</h5>
-                    <p>{roomid}</p>
                 </div>
                 <div className="flex items-center space-x-4">
                     <div className="flex flex-col">

@@ -4,7 +4,7 @@ const User = require('../DB/Schema/user');
 const InterviewSession = require('../DB/Schema/InterviewSessionSchema');
 const Room = require('../DB/Schema/room');
 const randomString = require('randomstring');
-const Codes = require('../utils/constants/default_code.json');
+const baseUrl = process.env.BASE_URL;
 
 
 // Create a new recruiter
@@ -130,9 +130,8 @@ exports.createInterviewAndSession = async (jobPositionId, candidates) => {
                     const roomName = `Interview for ${candidate.name}`;
                     const roomid = randomString.generate(6);
                     const language = "javascript";
-                    const code = Codes[language].snippet;
                     const owner = interviewer._id; // Assuming the interviewer is the room owner
-                    const room = { name: roomName, roomid, language, code, owner };
+                    const room = { name: roomName, roomid, language, owner };
                     console.log('this sisssss' + recruiter._id);
 
                     const createdRoom = await createRoom(room, interviewer._id, recruiter._id);
@@ -149,7 +148,7 @@ exports.createInterviewAndSession = async (jobPositionId, candidates) => {
                     sessionCreated = true;
 
                     // Generate the session link using the room's ID
-                    const sessionLink = `http://localhost:5173/roomdata/${createdRoom.roomid}`;
+                    const sessionLink = `${baseUrl}/roomdata/${createdRoom.roomid}`;
                     console.log(`${sessionLink}`)
                     await mailSender([
                         {

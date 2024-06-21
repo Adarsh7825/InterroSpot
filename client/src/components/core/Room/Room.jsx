@@ -36,6 +36,7 @@ const Room = () => {
     const [questions, setQuestions] = useState([]);
     const [overallFeedback, setOverallFeedback] = useState(null);
     const [newQuestionText, setNewQuestionText] = useState('');
+    const [activeTab, setActiveTab] = useState('console');
 
     useEffect(() => {
         if (user?.token === null) {
@@ -104,31 +105,107 @@ const Room = () => {
         }
     };
 
+    const handleMouseDown = (e) => {
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+    };
+
+    const handleMouseMove = (e) => {
+        const editor = document.getElementById('editor');
+        const console = document.getElementById('console');
+        const newWidth = e.clientX - editor.getBoundingClientRect().left;
+        editor.style.width = `${newWidth}px`;
+        console.style.width = `calc(100% - ${newWidth}px)`;
+    };
+
+    const handleMouseUp = () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    const handleInputChange = (index, field, value) => {
+        const updatedQuestions = [...questions];
+        updatedQuestions[index][field] = value;
+        setQuestions(updatedQuestions);
+    };
+
+    const handleStarClick = (index, nextValue) => {
+        const updatedQuestions = [...questions];
+        updatedQuestions[index].feedback = nextValue;
+        setQuestions(updatedQuestions);
+    };
+
     if (user.rooms && user) {
         return (
-            <div className="room-container">
-                <button id="leave-room" className="text-white" onClick={() => leaveRoom(socket, roomid, navigate)}>Leave Room</button>
-                <br></br>
-                {user.accountType !== ACCOUNT_TYPE.CANDIDATE && <GeneratePDF roomid={roomid} questions={questions} overallFeedback={overallFeedback} />}
-                <UserList inRoomUsers={inRoomUsers} />
-                <Ace
-                    updateRoom={(patch) => socket.emit('update', { roomid, patch })}
-                    code={code}
-                    setCode={setCode}
-                    language={language}
-                    setLanguage={setLanguage}
-                    roomid={roomid}
-                    EditorRef={EditorRef}
-                    input={input}
-                    setInput={setInput}
-                    output={output}
-                    setOutput={setOutput}
-                    IOEMIT={(a, b, c) => socket.emit('updateIO', { roomid, input: a, output: b, language: c })}
-                    run={run}
-                    running={running}
-                />
-                <div id="resize-editor" className="resize-editor">
-                    <div id="lines-resize" className="lines-resize"></div>
+            <div className="flex flex-col h-screen">
+                <div className="flex justify-between items-center p-4 bg-gray-800 text-white">
+                    <button id="leave-room" className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-600 hover:from-blue-500 hover:via-purple-600 hover:to-pink-700 text-white font-bold rounded" onClick={() => leaveRoom(socket, roomid, navigate)}>🚪 Leave Room</button>
+                    {user.accountType !== ACCOUNT_TYPE.CANDIDATE && <GeneratePDF roomid={roomid} questions={questions} overallFeedback={overallFeedback} />}
+                </div>
+                <div className="flex flex-grow">
+                    <div id="editor" className="w-1/3 border-r border-gray-700">
+                        <Ace
+                            updateRoom={(patch) => socket.emit('update', { roomid, patch })}
+                            code={code}
+                            setCode={setCode}
+                            language={language}
+                            setLanguage={setLanguage}
+                            roomid={roomid}
+                            EditorRef={EditorRef}
+                            input={input}
+                            setInput={setInput}
+                            output={output}
+                            setOutput={setOutput}
+                            IOEMIT={(a, b, c) => socket.emit('updateIO', { roomid, input: a, output: b, language: c })}
+                            run={run}
+                            running={running}
+                        />
+                    </div>
+                    <div
+                        id="resize-editor"
+                        className="w-1 bg-gray-700 cursor-col-resize"
+                        onMouseDown={handleMouseDown}
+                    ></div>
+                    <div id="console" className="w-2/3 flex flex-col">
+                        <div className="flex justify-between bg-gray-800 text-white">
+                            <button className={`flex-1 p-2 `} onClick={() => setActiveTab('console')}>Console</button>
+                            {user.accountType !== ACCOUNT_TYPE.CANDIDATE && (
+                                <button className={`flex-1 p-2`} onClick={() => setActiveTab('questions')}>Questions</button>
+                            )}
+                        </div>
+                        <div className="flex-grow overflow-auto">
+                            {activeTab === 'console' ? (
+                                <div className="p-4">
+                                    <div className="input mb-4">
+                                        <h5 className="text-white">Input</h5>
+                                        <textarea
+                                            className="w-full h-32 p-2 bg-gray-900"
+                                            value={input}
+                                            onChange={(e) => setInput(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="output">
+                                        <h5 className="text-white">Output</h5>
+                                        <textarea
+                                            className="w-full h-32 p-2 bg-gray-900"
+                                            value={output}
+                                            readOnly
+                                        />
+                                    </div>
+                                </div>
+                            ) : (
+                                <QuestionList
+                                    questions={questions}
+                                    handleStarClick={handleStarClick}
+                                    handleInputChange={handleInputChange}
+                                    overallFeedback={overallFeedback}
+                                    newQuestionText={newQuestionText}
+                                    setNewQuestionText={setNewQuestionText}
+                                    addQuestion={addQuestion}
+                                />
+                            )}
+                        </div>
+                    </div>
                 </div>
                 <VideoChat
                     socket={socket}
@@ -146,7 +223,6 @@ const Room = () => {
                 />
                 <WhiteBoard roomId={roomid} socket={socket} />
                 <ToastContainer autoClose={2000} />
-                {user.accountType !== ACCOUNT_TYPE.CANDIDATE && <QuestionList questions={questions} setQuestions={setQuestions} overallFeedback={overallFeedback} newQuestionText={newQuestionText} setNewQuestionText={setNewQuestionText} addQuestion={addQuestion} />}
             </div>
         )
     }

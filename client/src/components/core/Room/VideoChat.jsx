@@ -1,6 +1,6 @@
 import { Peer } from "peerjs";
 import React, { useEffect, useRef, useState } from "react";
-import Draggable from 'react-draggable';
+import { Rnd } from "react-rnd";
 
 const VideoChat = ({ socket, roomid, user, userVideo, closeIt }) => {
     const [peerId, setPeerId] = useState('');
@@ -164,20 +164,30 @@ const VideoChat = ({ socket, roomid, user, userVideo, closeIt }) => {
     }, [roomid]);
 
     return (
-        <Draggable>
-            <div className="video-chat flex flex-col items-center w-full max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl h-auto md:h-64 lg:h-80 xl:h-96 absolute top-2 right-2 bg-black bg-opacity-80 rounded-lg p-4">
+        <Rnd
+            default={{
+                x: 0,
+                y: 0,
+                width: 320,
+                height: 200,
+            }}
+            minWidth={200}
+            minHeight={200}
+            bounds="parent"
+        >
+            <div className="video-chat flex flex-col items-center w-full h-full bg-black bg-opacity-80 rounded-lg p-4">
                 {screen && !isOppositeUserTabActive && (
                     <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-75 text-white text-lg font-semibold">
                         user is on another tab
                     </div>
                 )}
-                <div className="users flex flex-col md:flex-row w-full">
-                    <div className="user-video flex flex-col items-center w-full md:w-1/2">
+                <div className="users flex flex-col md:flex-row w-full h-full">
+                    <div className="user-video flex flex-col items-center w-full md:w-1/2 h-full">
                         <h1 className={`waiting-video text-center text-gray-500 ${remotePeerIdValue ? 'hidden' : 'block'}`}>Waiting for user to Join</h1>
                         <video ref={remoteVideoRef} className="w-full h-auto" />
                         <h2 className="user-name text-center text-lg font-semibold">{guestName.current}</h2>
                     </div>
-                    <div className="user-video relative flex flex-col items-center w-full md:w-1/2">
+                    <div className="user-video relative flex flex-col items-center w-full md:w-1/2 h-full">
                         <video ref={userVideo} muted className="w-full h-auto" />
                         <h2 className="user-name text-center text-lg font-semibold">{user.name}</h2>
                         {peerId && screen && (
@@ -204,7 +214,7 @@ const VideoChat = ({ socket, roomid, user, userVideo, closeIt }) => {
                     <h1 className="text-center text-lg font-semibold">Loading</h1>
                 )}
             </div>
-        </Draggable>
+        </Rnd>
     );
 };
 

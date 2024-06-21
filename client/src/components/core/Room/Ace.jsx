@@ -77,23 +77,24 @@ const Ace = ({
     };
 
     return (
-        <div id="editor">
-            <Settings
-                setLanguage={setLanguage}
-                setTheme={setTheme}
-                setFontSize={setFontSize}
-                setFontFamily={setFontFamily}
-                language={language}
-                theme={theme}
-                fontSize={fontSize}
-                fontFamily={fontFamily}
-                updateRoom={updateRoom}
-                run={run}
-                handleLangChange={handleLangChange}
-                roomid={roomid}
-                running={running}
-            />
-            <div id='workspace' style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        <div className="h-full">
+            <div className="flex justify-between items-center p-4 bg-gray-800 text-white">
+                <Settings
+                    setLanguage={setLanguage}
+                    setTheme={setTheme}
+                    setFontSize={setFontSize}
+                    setFontFamily={setFontFamily}
+                    language={language}
+                    theme={theme}
+                    fontSize={fontSize}
+                    fontFamily={fontFamily}
+                    updateRoom={(patch) => socket.emit('update', { roomid, patch })}
+                    run={run}
+                    handleLangChange={handleLangChange}
+                    running={running}
+                />
+            </div>
+            <div id='workspace' className="flex flex-col h-full">
                 <AceEditor
                     setOptions={{
                         useWorker: false,
@@ -110,39 +111,13 @@ const Ace = ({
                     name="ACE_EDITOR"
                     value={code}
                     fontSize={18}
-                    height='50%'
+                    height='100%'
                     width='100%'
                     setAutoScrollEditorIntoView
                     defaultValue=''
                     ref={EditorRef}
                     editorProps={{ $blockScrolling: true }}
                 />
-                <div id='io' style={{ display: 'flex', flexDirection: 'column', height: '50%' }}>
-                    <div className="input" style={{ flex: 1 }}>
-                        <h5>Input</h5>
-                        <AceEditor
-                            theme={theme}
-                            mode={''}
-                            value={input}
-                            width="100%"
-                            height="100%"
-                            onChange={handleIOChange}
-                            fontSize={fontSize}
-                        />
-                    </div>
-                    <div className="output" style={{ flex: 1 }}>
-                        <h5>Output</h5>
-                        <AceEditor
-                            theme={theme}
-                            mode={''}
-                            value={output}
-                            width="100%"
-                            height="100%"
-                            readOnly={true}
-                            fontSize={fontSize}
-                        />
-                    </div>
-                </div>
             </div>
         </div>
     );

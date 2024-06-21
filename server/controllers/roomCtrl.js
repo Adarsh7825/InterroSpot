@@ -1,7 +1,7 @@
 const Room = require('../DB/Schema/room');
 const User = require('../DB/Schema/user');
 const InterviewSession = require('../DB/Schema/InterviewSessionSchema');
-const baseURL = 'http://localhost:5173';
+const baseURL = process.env.BASE_URL;
 const cloudinary = require('cloudinary').v2;
 
 

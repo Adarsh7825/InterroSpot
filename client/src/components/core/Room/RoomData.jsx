@@ -93,7 +93,7 @@ const RoomData = () => {
                     <CameraCapture onCapture={setCapturedPhoto} roomId={roomId} />
                     <button
                         onClick={() => joinRoom(roomId)}
-                        className="mt-4 px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                        className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-600 hover:from-blue-500 hover:via-purple-600 hover:to-pink-700 text-white font-bold rounded"
                     >
                         Join Room
                     </button>
