@@ -20,7 +20,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import CreateInteviewByRecruiter from './components/core/Dashboard/RecruiterDashboard/CreateInteviewByRecruiter';
 import DataContextProvider from './context/DataContext';
 import RoomData from './components/core/Room/RoomData';
-import Room from './components/core/Room/Room';
+import Room from './pages/Room';
 import CreateQuestionForm from './components/core/Question/CreateQuestionForm';
 
 function App() {

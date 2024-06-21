@@ -1,4 +1,3 @@
-// src/components/Room/UserList.js
 import React from 'react';
 
 const UserList = ({ inRoomUsers }) => {

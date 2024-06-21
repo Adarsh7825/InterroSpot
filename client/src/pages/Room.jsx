@@ -1,20 +1,19 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
-import { DataContext } from '../../../context/DataContext';
+import { DataContext } from '../context/DataContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch, useSelector } from "react-redux";
-import Ace from "./Ace";
-import defaultCode from '../../../static/default_code.json';
-import VideoChat from "./VideoChat";
-import { executeCode } from "../../../services/operations/executeCode";
-import { ACCOUNT_TYPE } from "../../../utils/constants";
-import WhiteBoard from "./WhiteBoard";
-import { fetchQuestions } from "../../../services/operations/roomAPI";
-import UserList from "./UserList";
-import QuestionList from "./QuestionList";
-import GeneratePDF from "./GeneratePDF";
-import { setupSocketHandlers, leaveRoom } from "./SocketHandlers";
+import Ace from "../components/core/Room/Ace";
+import defaultCode from '../static/default_code.json';
+import VideoChat from "../components/core/Room/VideoChat";
+import { executeCode } from "../services/operations/executeCode";
+import { ACCOUNT_TYPE } from "../utils/constants";
+import WhiteBoard from "../components/core/Room/WhiteBoard";
+import { fetchQuestions } from "../services/operations/roomAPI";
+import QuestionList from "../components/core/Room/QuestionList";
+import GeneratePDF from "../components/core/Room/GeneratePDF";
+import { setupSocketHandlers, leaveRoom } from "../components/core/Room/SocketHandlers";
 
 const Room = () => {
     const userVideoRef = useRef(null);
