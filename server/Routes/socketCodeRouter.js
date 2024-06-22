@@ -131,6 +131,15 @@ function manageRoom(socket, io) {
     socket.on('clearCanvas', ({ roomId }) => {
         io.to(roomId).emit('clearCanvas');
     });
+
+    socket.on("openWhiteBoard", ({ roomId }) => {
+        io.to(roomId).emit("openWhiteBoard");
+    });
+
+    socket.on('closeWhiteBoard', ({ roomId }) => {
+        io.to(roomId).emit('closeWhiteBoard');
+    });
+
 }
 
 module.exports = manageRoom;

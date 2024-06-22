@@ -1,17 +1,17 @@
-import { useEffect } from "react";
-import '../../../Styles/whiteBoard.css'
+import { useEffect, useState } from "react";
+import '../../../Styles/whiteBoard.css';
 import { io } from "socket.io-client";
 
 const WhiteBoard = ({ socket, roomId }) => {
+    const [isActive, setIsActive] = useState(false);
 
     useEffect(() => {
-        // eslint-disable-next-line no-undef
         socket.on("connect", () => {
             console.log("connected");
         });
 
         const root = document.querySelector("#root");
-        const canvas = document.querySelector(' #white-board canvas');
+        const canvas = document.querySelector('#white-board canvas');
         const ctx = canvas.getContext('2d');
         const width = canvas.width = window.innerWidth;
         const height = canvas.height = window.innerHeight - 80 - 50;
@@ -30,14 +30,12 @@ const WhiteBoard = ({ socket, roomId }) => {
         const rectangle = [0, 0, 0, 0];
         const circle = [0, 0, 0, 0, 0];
 
-
         const whiteBoard = document.querySelector("#white-board");
         const data = { color: root.classList.contains("dark") ? "white" : "black", thickness: 1 };
         const colors = document.querySelectorAll(".colors .color");
         const sizes = document.querySelectorAll(".sizes .size");
         const eraser = document.querySelector("#eraser");
         const shapes = document.querySelectorAll(".shapes .shape");
-        // click events
 
         colors.forEach((color, index) => {
             color.addEventListener("click", () => {
@@ -46,28 +44,28 @@ const WhiteBoard = ({ socket, roomId }) => {
                 color.classList.add("active");
                 sizes[data.thickness - 1].classList.add("active");
                 eraser.classList.remove("active");
-                if (index == colors.length - 1) {
+                if (index === colors.length - 1) {
                     changeContinuous();
                 } else {
                     data.color = getComputedStyle(color).getPropertyValue("--color");
-                    if (data.color == "black" && root.classList.contains("dark")) { data.color = "white"; }
+                    if (data.color === "black" && root.classList.contains("dark")) { data.color = "white"; }
                     ctx.strokeStyle = data.color;
                     ctx.lineWidth = data.thickness;
                 }
                 changeColorShape();
-            })
-        })
+            });
+        });
 
         sizes.forEach(size => {
             size.addEventListener("click", () => {
                 sizes.forEach(size => size.classList.remove("active"));
                 size.classList.add("active");
                 eraser.classList.remove("active");
-                if (data.color == "white") {
+                if (data.color === "white") {
                     colors[0].classList.add("active");
                 } else {
                     colors.forEach(color => {
-                        if (getComputedStyle(color).getPropertyValue("--color") == data.color) {
+                        if (getComputedStyle(color).getPropertyValue("--color") === data.color) {
                             color.classList.add("active");
                         }
                     });
@@ -75,8 +73,8 @@ const WhiteBoard = ({ socket, roomId }) => {
                 data.thickness = getComputedStyle(size).getPropertyValue("--width");
                 ctx.lineWidth = data.thickness;
                 ctx.strokeStyle = data.color;
-            })
-        })
+            });
+        });
 
         function changeContinuous() {
             colorInterval = setInterval(() => {
@@ -92,16 +90,15 @@ const WhiteBoard = ({ socket, roomId }) => {
         });
 
         eraser.addEventListener("click", () => {
-
             ctx.strokeStyle = "black";
             ctx.lineWidth = 20;
             eraser.classList.add("active");
             sizes.forEach(size => size.classList.remove("active"));
             colors.forEach(color => color.classList.remove("active"));
             shapes.forEach(shape => shape.classList.remove("active"));
-            pen.classList.remove("active")
+            pen.classList.remove("active");
             clearInterval(colorInterval);
-        })
+        });
 
         const pen = document.querySelector("#pen");
 
@@ -111,20 +108,19 @@ const WhiteBoard = ({ socket, roomId }) => {
             shapes.forEach(shape => shape.classList.remove("active"));
             eraser.classList.remove("active");
             clearInterval(colorInterval);
-            pen.classList.add("active")
+            pen.classList.add("active");
             changeColorShape();
             sizes[data.thickness - 1].classList.add("active");
-            if (data.color == "white") {
+            if (data.color === "white") {
                 colors[0].classList.add("active");
             } else {
                 colors.forEach(color => {
-                    if (getComputedStyle(color).getPropertyValue("--color") == data.color) {
+                    if (getComputedStyle(color).getPropertyValue("--color") === data.color) {
                         color.classList.add("active");
                     }
                 });
             }
-
-        })
+        });
 
         shapes.forEach(shape => {
             shape.addEventListener("click", () => {
@@ -135,19 +131,19 @@ const WhiteBoard = ({ socket, roomId }) => {
                 ctx.lineWidth = data.thickness;
                 ctx.strokeStyle = data.color;
                 sizes[data.thickness - 1].classList.add("active");
-                if (data.color == "white") {
+                if (data.color === "white") {
                     colors[0].classList.add("active");
                 } else {
                     colors.forEach(color => {
-                        if (getComputedStyle(color).getPropertyValue("--color") == data.color) {
+                        if (getComputedStyle(color).getPropertyValue("--color") === data.color) {
                             color.classList.add("active");
                         }
                     });
                 }
                 clearInterval(colorInterval);
                 changeColorShape();
-            })
-        })
+            });
+        });
 
         function changeColorShape() {
             const shapes = document.querySelectorAll(".shapes .shape, .shapes #pen");
@@ -159,15 +155,12 @@ const WhiteBoard = ({ socket, roomId }) => {
                     shape.style.color = root.classList.contains("dark") ? "white" : "black";
                     shape.style.borderColor = root.classList.contains("dark") ? "white" : "black";
                 }
-            })
+            });
         }
-
-
-        // event listeners
 
         function dragged(e) {
             if (!whiteBoard.classList.contains("active")) return;
-            if (e.target != canvas) {
+            if (e.target !== canvas) {
                 cursor.style.display = "none";
                 whiteBoard.style.cursor = "default";
                 return;
@@ -175,13 +168,12 @@ const WhiteBoard = ({ socket, roomId }) => {
             cursor.style.display = "block";
             whiteBoard.style.cursor = "none";
             if (eraser.classList.contains("active")) {
-                cursor.style.backgroundImage = "url('https://i.ibb.co/Y0hGbFf/eraser.png')"
+                cursor.style.backgroundImage = "url('https://i.ibb.co/Y0hGbFf/eraser.png')";
             } else if (pen.classList.contains("active")) {
-                cursor.style.backgroundImage = "https://i.ibb.co/tmDc7mV/pencil.png"
+                cursor.style.backgroundImage = "url('https://i.ibb.co/tmDc7mV/pencil.png')";
             } else {
                 whiteBoard.style.cursor = "crosshair";
                 cursor.style.backgroundImage = "none";
-
             }
             cursor.style.left = e.clientX + "px";
             cursor.style.top = e.clientY + "px";
@@ -212,18 +204,17 @@ const WhiteBoard = ({ socket, roomId }) => {
 
                 canvas.addEventListener("mouseup", () => {
                     canvas.removeEventListener("mousemove", callDrawShape);
-                    if (shape.id == "triangle") {
-                        drawTriangle()
-                    } else if (shape.id == "rectangle") {
-                        drawRectangle()
+                    if (shape.id === "triangle") {
+                        drawTriangle();
+                    } else if (shape.id === "rectangle") {
+                        drawRectangle();
                     } else {
                         drawCircle();
                     }
-                }, { once: true })
-
+                }, { once: true });
 
                 return;
-            };
+            }
             interval = setInterval(() => drawLine(), 10);
         }
 
@@ -240,52 +231,39 @@ const WhiteBoard = ({ socket, roomId }) => {
 
         canvas.addEventListener("mouseleave", () => {
             clearInterval(interval);
-        })
+        });
         canvas.addEventListener("touchcancel", () => {
             clearInterval(interval);
-        })
+        });
 
         function drawLine() {
             ctx.beginPath();
             ctx.strokeStyle = eraser.classList.contains("active") ? root.classList.contains("dark") ? "#222" : "#fff" : data.color;
-            ctx.moveTo(prevX, prevY)
+            ctx.moveTo(prevX, prevY);
             ctx.lineTo(x, y);
             ctx.stroke();
             socket.emit("drawData", { roomId: roomId, prevX, prevY, x, y, color: data.color, thickness: data.thickness, shape: eraser.classList.contains("active") ? "eraser" : "pen" });
             count++;
-            // console.log(count);
         }
-
 
         function drawShape(e, shape) {
             const toolbar = document.querySelector(".toolbar");
-            if (shape.id == "triangle") {
+            if (shape.id === "triangle") {
                 triangle[0].y = e.offsetY;
                 triangle[2].x = e.offsetX;
                 triangle[2].y = e.offsetY;
                 triangle[1].x = (triangle[0].x + triangle[2].x) / 2;
             }
 
-            if (shape.id == "rectangle") {
+            if (shape.id === "rectangle") {
                 rectangle[2] = e.offsetX;
                 rectangle[3] = e.offsetY;
-                // shapeDemo.style.borderRadius = "0%";
-                // shapeDemo.style.left = rectangle[0] + "px";
-                // shapeDemo.style.top = rectangle[1] + toolbar.offsetHeight + "px";
-                // shapeDemo.style.width = rectangle[2] - rectangle[0] + "px";
-                // shapeDemo.style.height = rectangle[3] - rectangle[1] + "px";
             }
 
-            if (shape.id == "circle") {
+            if (shape.id === "circle") {
                 circle[2] = (e.offsetX - circle[0]) / 2 + circle[0];
                 circle[3] = (e.offsetY - circle[1]) / 2 + circle[1];
                 circle[4] = Math.sqrt(Math.pow(e.offsetX - circle[2], 2) + Math.pow(e.offsetY - circle[3], 2));
-                // shapeDemo.style.borderRadius = "50%";
-                // shapeDemo.style.left = circle[2] - circle[4] + "px";
-                // shapeDemo.style.top = circle[3] - circle[4] + toolbar.offsetHeight + "px";
-                // shapeDemo.style.width = circle[4] * 2 + "px";
-                // shapeDemo.style.height = circle[4] * 2 + "px"
-
             }
         }
 
@@ -298,7 +276,6 @@ const WhiteBoard = ({ socket, roomId }) => {
             ctx.lineTo(triangle[2].x, triangle[2].y);
             ctx.lineTo(triangle[0].x, triangle[0].y);
             ctx.stroke();
-            // shapeDemo.style.width = shapeDemo.style.height = 0;
             socket.emit("drawData", { roomId, triangle, color: data.color, thickness: data.thickness, shape: "triangle" });
         }
 
@@ -308,7 +285,6 @@ const WhiteBoard = ({ socket, roomId }) => {
             ctx.beginPath();
             ctx.rect(rectangle[0], rectangle[1], rectangle[2] - rectangle[0], rectangle[3] - rectangle[1]);
             ctx.stroke();
-            // shapeDemo.style.width = shapeDemo.style.height = 0;
             socket.emit("drawData", { roomId, rectangle, color: data.color, thickness: data.thickness, shape: "rectangle" });
         }
 
@@ -318,8 +294,6 @@ const WhiteBoard = ({ socket, roomId }) => {
             ctx.beginPath();
             ctx.arc(circle[2], circle[3], circle[4], 0, 2 * Math.PI);
             ctx.stroke();
-            // shapeDemo.style.width = shapeDemo.style.height = 0;
-
             socket.emit("drawData", { roomId, x: circle[2], y: circle[3], radius: circle[4], color: data.color, thickness: data.thickness, shape: "circle" });
         }
 
@@ -353,7 +327,7 @@ const WhiteBoard = ({ socket, roomId }) => {
                 ctx.strokeStyle = "#fff";
             }
             ctx.beginPath();
-            ctx.moveTo(data.prevX, data.prevY)
+            ctx.moveTo(data.prevX, data.prevY);
             ctx.lineTo(data.x, data.y);
             ctx.stroke();
         });
@@ -362,14 +336,44 @@ const WhiteBoard = ({ socket, roomId }) => {
             ctx.clearRect(0, 0, width, height);
         });
 
-        const whiteBoardBtn = document.querySelector("#white-board  button");
-        whiteBoardBtn.addEventListener("click", () => {
-            whiteBoardBtn.parentElement.classList.toggle("active");
-            document.querySelector("#leave-room").classList.toggle("active");
-        })
-    }, []);
+        const handleWhiteBoardToggle = () => {
+            if (isActive) {
+                socket.emit("closeWhiteBoard", { roomId });
+            } else {
+                socket.emit("openWhiteBoard", { roomId });
+            }
+            setIsActive(!isActive);
+        };
+
+        const whiteBoardBtn = document.querySelector("#white-board-btn");
+        whiteBoardBtn.addEventListener("click", handleWhiteBoardToggle);
+
+        return () => {
+            whiteBoardBtn.removeEventListener("click", handleWhiteBoardToggle);
+        };
+    }, [isActive, roomId, socket]);
+
+    useEffect(() => {
+        socket.on("openWhiteBoard", () => {
+            setIsActive(true);
+            document.querySelector("#white-board").classList.add("active");
+            document.querySelector("#leave-room").classList.add("active");
+        });
+
+        socket.on("closeWhiteBoard", () => {
+            setIsActive(false);
+            document.querySelector("#white-board").classList.remove("active");
+            document.querySelector("#leave-room").classList.remove("active");
+        });
+
+        return () => {
+            socket.off("openWhiteBoard");
+            socket.off("closeWhiteBoard");
+        };
+    }, [socket]);
+
     return (
-        <div id="white-board" >
+        <div id="white-board">
             <div className="toolbar">
                 <div className="sizes">
                     <div className="size active" style={{ "--width": 1 }}></div>
@@ -386,11 +390,9 @@ const WhiteBoard = ({ socket, roomId }) => {
                     <div className="color" style={{ "--color": "red" }}></div>
                     <div
                         className="color"
-                        style=
-                        {{
+                        style={{
                             "--color": "linear-gradient(90deg, rgba(255,0,0,1) 0%, rgba(255,255,0,1) 50%, rgba(0,255,0,1) 100%)"
                         }}
-
                     ></div>
                 </div>
 
@@ -412,14 +414,14 @@ const WhiteBoard = ({ socket, roomId }) => {
                         </div>
                     </div>
                 </div>
-
             </div>
             <div id="cursor"></div>
-            {/* <div id="shape-demo"></div> */}
             <canvas></canvas>
-            <button id="white-board-btn" ><span>WhiteBoard</span></button>
-        </div >
-    )
+            <button id="white-board-btn">
+                <span>{isActive ? "Close WhiteBoard" : "Open WhiteBoard"}</span>
+            </button>
+        </div>
+    );
 };
 
 export default WhiteBoard;

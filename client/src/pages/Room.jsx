@@ -62,6 +62,12 @@ const Room = () => {
             toast,
         });
 
+        socket.on("openWhiteBoard", () => {
+            document.querySelector("#white-board").classList.add("active");
+            document.querySelector("#leave-room").classList.add("active");
+        });
+
+
         return () => {
             socket.off();
         }
