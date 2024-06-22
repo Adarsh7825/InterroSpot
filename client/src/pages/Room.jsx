@@ -36,6 +36,7 @@ const Room = () => {
     const [overallFeedback, setOverallFeedback] = useState(null);
     const [newQuestionText, setNewQuestionText] = useState('');
     const [activeTab, setActiveTab] = useState('console');
+    const [clientCursors, setClientCursors] = useState({});
 
     useEffect(() => {
         if (user?.token === null) {
@@ -67,6 +68,9 @@ const Room = () => {
             document.querySelector("#leave-room").classList.add("active");
         });
 
+        socket.on('update-cursor-position', ({ cursors }) => {
+            setClientCursors(cursors);
+        });
 
         return () => {
             socket.off();
@@ -85,6 +89,20 @@ const Room = () => {
 
         fetchQuestionsData();
     }, [roomid]);
+
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            socket.emit('update-cursor-position', { roomId: roomid, username: user.firstName, x, y });
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+        };
+    }, [socket, roomid, user.firstName]);
 
     const run = async () => {
         try {
@@ -140,6 +158,17 @@ const Room = () => {
         setQuestions(updatedQuestions);
     };
 
+    const generateColor = (str) => {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+
+        const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+
+        return `#${'00000'.substring(0, 6 - c.length)}${c}`;
+    };
+
     if (user.rooms && user) {
         return (
             <div className="flex flex-col h-screen">
@@ -173,9 +202,9 @@ const Room = () => {
                     ></div>
                     <div id="console" className="w-2/3 flex flex-col">
                         <div className="flex justify-between bg-gray-800 text-white">
-                            <button className={`flex-1 p-2 `} onClick={() => setActiveTab('console')}>Console</button>
+                            <button className="flex-1 p-2" onClick={() => setActiveTab('console')}>Console</button>
                             {user.accountType !== ACCOUNT_TYPE.CANDIDATE && (
-                                <button className={`flex-1 p-2`} onClick={() => setActiveTab('questions')}>Questions</button>
+                                <button className="flex-1 p-2" onClick={() => setActiveTab('questions')}>Questions</button>
                             )}
                         </div>
                         <div className="flex-grow overflow-auto">
@@ -228,6 +257,22 @@ const Room = () => {
                 />
                 <WhiteBoard roomId={roomid} socket={socket} />
                 <ToastContainer autoClose={2000} />
+                {Object.entries(clientCursors).map(([username, { x, y }]) => (
+                    <div
+                        key={username}
+                        className="w-4 h-4 absolute rounded-full transform -translate-x-1/2 -translate-y-1/2 cursor-pointer border-2 border-white"
+                        style={{
+                            left: `${x}px`,
+                            top: `${y}px`,
+                            backgroundColor: generateColor(username),
+                            boxShadow: '0 0 5px rgba(0, 0, 0, 0.5)',
+                            zIndex: 1000,
+                            pointerEvents: 'none',
+                        }}
+                    >
+                        <span className="text-[#ff9f1c] m-3 text-xs font-semibold">{username}</span>
+                    </div>
+                ))}
             </div>
         )
     }
