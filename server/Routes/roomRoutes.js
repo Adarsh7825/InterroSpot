@@ -7,7 +7,7 @@ const { createRoom, deleteRoom, fetch, updateRoom } = require('../controllers/ro
 // Use the middleware
 roomRouter.post('/create', auth, roomData, createRoom);
 roomRouter.get('/fetch', auth, fetch);
-roomRouter.patch('/update', auth, isAdmin, isInterviewer, isRecruiter, updateRoom);
+roomRouter.patch('/update', auth, updateRoom);
 roomRouter.delete('/delete', auth, isAdmin, isInterviewer, isRecruiter, deleteRoom);
 
 module.exports = roomRouter;

@@ -10,7 +10,7 @@ exports.createRoom = async (req, res) => {
     try {
         const room = new Room(req.room);
         await room.save();
-        const user = await User.findById(req?.user._id);
+        const user = await User.findById(req?.user.id);
         if (!user) {
             throw new Error('User not found');
         }

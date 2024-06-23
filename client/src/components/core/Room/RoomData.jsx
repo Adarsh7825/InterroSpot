@@ -56,20 +56,21 @@ const RoomData = () => {
     };
 
     useEffect(() => {
-        if (user && !user.rooms.every(room => !room.updatedAt.includes("T"))) {
-            user.rooms.forEach((item) => {
-                let temp = item.updatedAt.replace('T', ' ').split(":");
-                temp.pop();
-                item.updatedAt = temp.join(":");
-            });
-            user.rooms.sort((a, b) => {
-                return new Date(b.updatedAt) - new Date(a.updatedAt);
-            });
+        if (user && Array.isArray(user.rooms)) {
+            const roomsWithUpdatedAt = user.rooms.filter(room => room.updatedAt);
+            if (!roomsWithUpdatedAt.every(room => !room.updatedAt.includes("T"))) {
+                roomsWithUpdatedAt.forEach((item) => {
+                    let temp = item.updatedAt.replace('T', ' ').split(":");
+                    temp.pop();
+                    item.updatedAt = temp.join(":");
+                });
+                roomsWithUpdatedAt.sort((a, b) => {
+                    return new Date(b.updatedAt) - new Date(a.updatedAt);
+                });
 
-            setUser({ ...user });
-        }
+                setUser({ ...user, rooms: roomsWithUpdatedAt });
+            }
 
-        if (user) {
             document.querySelectorAll(".join-room input").forEach(input => {
                 input.addEventListener("keydown", (e) => {
                     if (e.key === "Enter")

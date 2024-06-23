@@ -118,6 +118,9 @@ const Home = () => {
                         <CTAButton active={false} linkto={"/dashboard/form"}>
                             Create Interview
                         </CTAButton>
+                        <CTAButton active={false} linkto={"/create-room"}>
+                            Pair Programming
+                        </CTAButton>
                     </div>
                 </div>
 

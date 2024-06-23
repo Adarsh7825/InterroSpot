@@ -22,6 +22,7 @@ import DataContextProvider from './context/DataContext';
 import RoomData from './components/core/Room/RoomData';
 import Room from './pages/Room';
 import CreateQuestionForm from './components/core/Question/CreateQuestionForm';
+import CreateRoom from './components/core/PairProgramming/CreateRoom';
 
 function App() {
   const { user } = useSelector((state) => state.profile);
@@ -57,6 +58,7 @@ function App() {
             }
             <Route path="dashboard/Settings" element={<Settings />} />
             <Route path="/roomdata/:roomId" element={<RoomData />} />
+            <Route path='/create-room' element={<CreateRoom />} />
             <Route path='/room/:roomId' element={<Room />} />
             <Route path='*' element={<Error />} />
           </Routes>

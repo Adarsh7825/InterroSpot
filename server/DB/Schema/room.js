@@ -31,7 +31,6 @@ const roomSchema = new Schema({
     recruiter: {
         type: Schema.Types.ObjectId,
         ref: 'Recruiter',
-        required: true
     },
     imageUrl: {
         type: String,

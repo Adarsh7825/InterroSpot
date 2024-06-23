@@ -1,5 +1,5 @@
 import React from 'react';
-import StarRatingComponent from 'react-star-rating-component';
+// import StarRatingComponent from 'react-star-rating-component';
 
 const QuestionList = ({ questions, handleStarClick, handleInputChange, overallFeedback, newQuestionText, setNewQuestionText, addQuestion }) => {
     return (
@@ -8,14 +8,14 @@ const QuestionList = ({ questions, handleStarClick, handleInputChange, overallFe
             {questions.map((question, index) => (
                 <div key={index} className="question-item mb-6 p-4 bg-gray-800 rounded-lg shadow-md">
                     <h3 className="text-xl font-semibold mb-2">{question.text}</h3>
-                    <StarRatingComponent
+                    {/* <StarRatingComponent
                         name={`${index}`}
                         starCount={10}
                         value={question.feedback || 0}
                         onStarClick={(nextValue) => handleStarClick(index, nextValue)}
                         starColor="#ffd700"
                         emptyStarColor="#4a5568"
-                    />
+                    /> */}
                     <div className="mt-4">
                         <label className="block text-sm font-medium mb-1">Strength:</label>
                         <input

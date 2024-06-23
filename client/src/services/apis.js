@@ -14,6 +14,7 @@ export const endpoints = {
     FETCH_CANDIDATE_IMAGE_API: BASE_URL + "/captureImage/fetchImage",
     FETCH_INTERVIEWER_IMAGE_API: BASE_URL + "/captureImage/fetchImage",
     FETCH_JOB_POSITION_API: BASE_URL + "/recruiter/getjobposition",
+    CREATE_ROOM_API: BASE_URL + "/rooms/create",
 }
 
 export const profileEndpoints = {

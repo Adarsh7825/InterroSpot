@@ -4,10 +4,15 @@ const Codes = require('../utils/constants/default_code.json');
 const roomData = async (req, res, next) => {
     try {
         const name = req.body.name;
+        console.log(name)
         const roomid = randomString.generate(6);
-        const language = req.user.editor.language;
+        console.log(roomid)
+        const language = "javascript";
+        console.log(language)
         const code = Codes[language].snippet;
-        const owner = req.user._id;
+        console.log(code)
+        const owner = req.user.id;
+        console.log(owner)
         const room = { name, roomid, language, code, owner };
         req.room = room;
         next();
