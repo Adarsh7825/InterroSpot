@@ -3,8 +3,8 @@ import ReactStars from 'react-rating-stars-component';
 
 const QuestionList = ({ questions, handleStarClick, handleInputChange, newQuestionText, setNewQuestionText, addQuestion }) => {
     return (
-        <div className="text-white p-4 h-full bg-gray-900">
-            <h2 className="text-2xl font-bold mb-4">Questions</h2>
+        <div className="question-list bg-black text-white p-4 h-full overflow-auto">
+            <h2 className="text-2xl font-bold ">Questions</h2>
             {questions.map((question, index) => (
                 <div key={index} className="question-item mb-6 p-4 bg-gray-800 rounded-lg shadow-md">
                     <h3 className="text-xl font-semibold mb-2">{question.text}</h3>
@@ -23,7 +23,7 @@ const QuestionList = ({ questions, handleStarClick, handleInputChange, newQuesti
                             value={question.strength || ''}
                             onChange={(e) => handleInputChange(index, 'strength', e.target.value)}
                             placeholder="Enter strength"
-                            className="input-field w-full p-2 bg-gray-700 rounded-md text-black"
+                            className="input-field w-full p-2 bg-gray-700 rounded-md text-white"
                         />
                     </div>
                     <div className="mt-4">
@@ -33,7 +33,7 @@ const QuestionList = ({ questions, handleStarClick, handleInputChange, newQuesti
                             value={question.improvement || ''}
                             onChange={(e) => handleInputChange(index, 'improvement', e.target.value)}
                             placeholder="Enter ease of improvement"
-                            className="input-field w-full p-2 bg-gray-700 rounded-md text-black"
+                            className="input-field w-full p-2 bg-gray-700 rounded-md text-white"
                         />
                     </div>
                 </div>
@@ -44,7 +44,7 @@ const QuestionList = ({ questions, handleStarClick, handleInputChange, newQuesti
                     value={newQuestionText}
                     onChange={(e) => setNewQuestionText(e.target.value)}
                     placeholder="Enter new question"
-                    className="input-field w-full p-2 bg-gray-700 rounded-md mb-4"
+                    className="input-field w-full p-2 bg-gray-700 rounded-md mb-4 text-white"
                 />
                 <button onClick={addQuestion} className="add-question-button w-full p-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-600 hover:from-blue-500 hover:via-purple-600 hover:to-pink-700 text-white font-bold rounded">
                     Add Question

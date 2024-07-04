@@ -14,6 +14,7 @@ import { fetchQuestions } from "../services/operations/roomAPI";
 import QuestionList from "../components/core/Room/QuestionList";
 import GeneratePDF from "../components/core/Room/GeneratePDF";
 import { setupSocketHandlers, leaveRoom } from "../components/core/Room/SocketHandlers";
+import ScreenRecorder from '../components/core/Room/ScreenRecorder';
 
 const Room = () => {
     const userVideoRef = useRef(null);
@@ -37,6 +38,8 @@ const Room = () => {
     const [newQuestionText, setNewQuestionText] = useState('');
     const [activeTab, setActiveTab] = useState('console');
     const [clientCursors, setClientCursors] = useState({});
+    const [startRecording, setStartRecording] = useState(false);
+    const [stopRecording, setStopRecording] = useState(false);
 
     useEffect(() => {
         if (user?.token === null) {
@@ -103,6 +106,13 @@ const Room = () => {
             document.removeEventListener('mousemove', handleMouseMove);
         };
     }, [socket, roomid, user.firstName]);
+
+    useEffect(() => {
+        setStartRecording(true);
+        return () => {
+            setStopRecording(true);
+        };
+    }, []);
 
     const run = async () => {
         try {
@@ -210,11 +220,11 @@ const Room = () => {
                     </div>
                     <div
                         id="resize-editor"
-                        className="w-1 bg-gray-700 cursor-col-resize"
+                        className="w-1 bg-gray-900 cursor-col-resize"
                         onMouseDown={handleMouseDown}
                     ></div>
-                    <div id="console" className="w-2/3 flex flex-col">
-                        <div className="flex justify-between bg-gray-800 text-white">
+                    <div className="w-2/3 flex flex-col bg-gray-900 overflow-auto">
+                        <div className="flex justify-between bg-gray-900 text-white">
                             <button className="flex-1 p-2" onClick={() => setActiveTab('console')}>Console</button>
                             {user.accountType !== ACCOUNT_TYPE.CANDIDATE && (
                                 <button className="flex-1 p-2" onClick={() => setActiveTab('questions')}>Questions</button>
@@ -286,6 +296,9 @@ const Room = () => {
                         <span className="text-[#ff9f1c] m-3 text-xs font-semibold">{username}</span>
                     </div>
                 ))}
+                {user.accountType !== ACCOUNT_TYPE.CANDIDATE && (
+                    <ScreenRecorder startRecording={startRecording} stopRecording={stopRecording} />
+                )}
             </div>
         )
     }
