@@ -169,12 +169,25 @@ const Room = () => {
         return `#${'00000'.substring(0, 6 - c.length)}${c}`;
     };
 
+    const calculateOverallFeedback = () => {
+        if (questions.length === 0) return null;
+        const totalFeedback = questions.reduce((acc, question) => acc + (question.feedback || 0), 0);
+        const averageFeedback = totalFeedback / questions.length;
+
+        if (averageFeedback >= 8) return "Strong Yes";
+        if (averageFeedback >= 6) return "Yes";
+        if (averageFeedback >= 4) return "No";
+        return "Strong No";
+    };
+
+    const overallFeedbackVerdict = calculateOverallFeedback();
+
     if (user.rooms && user) {
         return (
             <div className="flex flex-col h-screen">
                 <div className="flex justify-between items-center p-4 bg-gray-800 text-white">
                     <button id="leave-room" className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-600 hover:from-blue-500 hover:via-purple-600 hover:to-pink-700 text-white font-bold rounded" onClick={() => leaveRoom(socket, roomid, navigate)}>🚪 Leave Room</button>
-                    {user.accountType !== ACCOUNT_TYPE.CANDIDATE && <GeneratePDF roomid={roomid} questions={questions} overallFeedback={overallFeedback} />}
+                    {user.accountType !== ACCOUNT_TYPE.CANDIDATE && <GeneratePDF roomid={roomid} questions={questions} overallFeedback={overallFeedbackVerdict} />}
                 </div>
                 <div className="flex flex-grow">
                     <div id="editor" className="w-1/3 border-r border-gray-700">

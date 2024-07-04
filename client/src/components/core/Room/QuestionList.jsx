@@ -1,21 +1,21 @@
 import React from 'react';
-// import StarRatingComponent from 'react-star-rating-component';
+import ReactStars from 'react-rating-stars-component';
 
-const QuestionList = ({ questions, handleStarClick, handleInputChange, overallFeedback, newQuestionText, setNewQuestionText, addQuestion }) => {
+const QuestionList = ({ questions, handleStarClick, handleInputChange, newQuestionText, setNewQuestionText, addQuestion }) => {
     return (
         <div className="text-white p-4 h-full bg-gray-900">
             <h2 className="text-2xl font-bold mb-4">Questions</h2>
             {questions.map((question, index) => (
                 <div key={index} className="question-item mb-6 p-4 bg-gray-800 rounded-lg shadow-md">
                     <h3 className="text-xl font-semibold mb-2">{question.text}</h3>
-                    {/* <StarRatingComponent
-                        name={`${index}`}
-                        starCount={10}
+                    <ReactStars
+                        count={10}
                         value={question.feedback || 0}
-                        onStarClick={(nextValue) => handleStarClick(index, nextValue)}
-                        starColor="#ffd700"
-                        emptyStarColor="#4a5568"
-                    /> */}
+                        onChange={(nextValue) => handleStarClick(index, nextValue)}
+                        size={24}
+                        activeColor="#ffd700"
+                        color="#4a5568"
+                    />
                     <div className="mt-4">
                         <label className="block text-sm font-medium mb-1">Strength:</label>
                         <input
@@ -38,11 +38,6 @@ const QuestionList = ({ questions, handleStarClick, handleInputChange, overallFe
                     </div>
                 </div>
             ))}
-            {overallFeedback && (
-                <div className="mt-6 p-4 bg-gray-800 rounded-lg shadow-md">
-                    <h3 className="text-xl font-semibold">Overall Feedback: {overallFeedback}</h3>
-                </div>
-            )}
             <div className="add-question mt-6">
                 <input
                     type="text"

@@ -52,26 +52,37 @@ const GeneratePDF = ({ roomid, questions, overallFeedback }) => {
             const lineHeight = 10;
             const margin = 10;
 
-            questions.forEach((question, index) => {
+            const filledStar = new Image();
+            filledStar.src = 'https://i.ibb.co/PGfX6hM/favorite-star-17015.png';
+            const emptyStar = new Image();
+            emptyStar.src = 'https://i.ibb.co/7yX4tFx/star-101305.png';
+
+            for (const question of questions) {
                 if (yOffset + lineHeight * 4 > pageHeight - margin) {
                     doc.addPage();
                     yOffset = margin;
                 }
                 doc.setFontSize(14);
                 doc.setTextColor(0, 0, 0);
-                doc.text(`Question ${index + 1}: ${question.text}`, 10, yOffset);
+                doc.text(`Question ${questions.indexOf(question) + 1}: ${question.text}`, 10, yOffset);
                 yOffset += lineHeight;
+
+                // Add stars
+                const starSize = 10;
+                for (let i = 0; i < 10; i++) {
+                    const starImage = i < question.feedback ? filledStar : emptyStar;
+                    doc.addImage(starImage.src, 'PNG', 10 + i * starSize, yOffset, starSize, starSize);
+                }
+                yOffset += starSize + lineHeight; // Adjust yOffset to account for star size
+
                 doc.setFontSize(12);
-                doc.setTextColor(0, 100, 0);
-                doc.text(`Rating: ${question.feedback}`, 10, yOffset);
-                yOffset += lineHeight;
                 doc.setTextColor(255, 0, 0);
                 doc.text(`Strength: ${question.strength}`, 10, yOffset);
                 yOffset += lineHeight;
                 doc.setTextColor(0, 0, 255);
                 doc.text(`Ease of Improvement: ${question.improvement}`, 10, yOffset);
                 yOffset += lineHeight * 2;
-            });
+            }
 
             // Add overall feedback
             if (overallFeedback) {
