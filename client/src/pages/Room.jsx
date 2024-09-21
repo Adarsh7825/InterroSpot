@@ -14,7 +14,6 @@ import { fetchQuestions } from "../services/operations/roomAPI";
 import QuestionList from "../components/core/Room/QuestionList";
 import GeneratePDF from "../components/core/Room/GeneratePDF";
 import { setupSocketHandlers, leaveRoom } from "../components/core/Room/SocketHandlers";
-import ScreenRecorder from '../components/core/Room/ScreenRecorder';
 
 const Room = () => {
     const userVideoRef = useRef(null);
@@ -38,8 +37,6 @@ const Room = () => {
     const [newQuestionText, setNewQuestionText] = useState('');
     const [activeTab, setActiveTab] = useState('console');
     const [clientCursors, setClientCursors] = useState({});
-    const [startRecording, setStartRecording] = useState(false);
-    const [stopRecording, setStopRecording] = useState(false);
 
     useEffect(() => {
         if (user?.token === null) {
@@ -107,12 +104,6 @@ const Room = () => {
         };
     }, [socket, roomid, user.firstName]);
 
-    useEffect(() => {
-        setStartRecording(true);
-        return () => {
-            setStopRecording(true);
-        };
-    }, []);
 
     const run = async () => {
         try {
@@ -296,9 +287,6 @@ const Room = () => {
                         <span className="text-[#ff9f1c] m-3 text-xs font-semibold">{username}</span>
                     </div>
                 ))}
-                {user.accountType !== ACCOUNT_TYPE.CANDIDATE && (
-                    <ScreenRecorder startRecording={startRecording} stopRecording={stopRecording} />
-                )}
             </div>
         )
     }

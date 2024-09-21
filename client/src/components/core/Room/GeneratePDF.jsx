@@ -95,9 +95,25 @@ const GeneratePDF = ({ roomid, questions, overallFeedback }) => {
                 doc.text(`Overall Feedback: ${overallFeedback}`, 10, yOffset);
             }
 
-            // Save the PDF
-            doc.save('interview_feedback.pdf');
-            toast.success('PDF generated successfully!');
+            // Convert the PDF to a Blob
+            const pdfBlob = doc.output('blob');
+
+            // Create a FormData object to send the Blob
+            const formData = new FormData();
+            formData.append('pdf', pdfBlob, 'interview_feedback.pdf');
+            formData.append('roomid', roomid);
+
+            // Send the Blob to the server
+            const response = await fetch('/api/send-pdf', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                toast.success('PDF generated and sent successfully!');
+            } else {
+                throw new Error('Failed to send PDF');
+            }
         } catch (error) {
             console.error('Error generating PDF:', error);
             toast.error('Failed to generate PDF');

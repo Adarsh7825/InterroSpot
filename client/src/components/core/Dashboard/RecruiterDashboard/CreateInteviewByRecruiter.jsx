@@ -127,6 +127,10 @@ function CreateInterviewByRecruiter() {
                         <option value="frontend">Frontend</option>
                         <option value="backend">Backend</option>
                         <option value="Full Stack">Full Stack</option>
+                        <option value="frontend">Devops Engineer</option>
+                        <option value="backend">Backend java(5-8 years)</option>
+                        <option value="Full Stack">Mobile developer</option>
+                        <option value="Full Stack">Desktop developer</option>
                     </select>
                     <input
                         type="text"
@@ -189,7 +193,7 @@ function CreateInterviewByRecruiter() {
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
                 />
             </div>
-            <button type="submit" className="bg-black text-whitey font-bold py-2 px-4 rounded">Submit</button>
+            <button type="submit" className="bg-black text-white font-bold py-2 px-4 rounded">Submit</button>
         </form>
     );
 }
