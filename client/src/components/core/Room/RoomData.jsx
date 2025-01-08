@@ -82,22 +82,65 @@ const RoomData = () => {
     }, [user]);
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
-            <div className="w-full max-w-md p-4 bg-gray-800 rounded-lg shadow-md">
-                <div className="flex flex-col items-center">
-                    <div className="mb-4">
-                        {user.avatar ?
-                            <img src={user.avatar} alt='user profile' className="rounded-full w-20 h-20" />
-                            : <img src={`data:image/svg+xml;utf8,${generateFromString(user.email + user.name)}`} alt="user profile" className="rounded-full w-20 h-20" />
-                        }
+        <div className="min-h-screen bg-gradient-to-br from-[#1A1A2E] to-[#16213E] flex items-center justify-center p-4">
+            <div className="w-full max-w-xl bg-[#0F3460]/30 backdrop-blur-lg rounded-2xl border border-[#533483]/20 shadow-xl p-8">
+                {/* User Profile Section */}
+                <div className="flex flex-col items-center mb-8">
+                    <div className="relative mb-6">
+                        {user.avatar ? (
+                            <img
+                                src={user.avatar}
+                                alt='user profile'
+                                className="w-24 h-24 rounded-2xl border-2 border-[#E94560] shadow-lg shadow-[#E94560]/30"
+                            />
+                        ) : (
+                            <img
+                                src={`data:image/svg+xml;utf8,${generateFromString(user.email + user.name)}`}
+                                alt="user profile"
+                                className="w-24 h-24 rounded-2xl border-2 border-[#E94560] shadow-lg shadow-[#E94560]/30"
+                            />
+                        )}
                     </div>
-                    <CameraCapture onCapture={setCapturedPhoto} roomId={roomId} />
-                    <button
-                        onClick={() => joinRoom(roomId)}
-                        className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-600 hover:from-blue-500 hover:via-purple-600 hover:to-pink-700 text-white font-bold rounded"
-                    >
-                        Join Room
-                    </button>
+                    <h2 className="text-2xl font-bold text-white mb-2">
+                        Welcome, {user.firstName}!
+                    </h2>
+                    <p className="text-gray-400 text-sm mb-6">
+                        Please capture your photo to join the room
+                    </p>
+                </div>
+
+                {/* Camera Section */}
+                <div className="bg-[#1A1A2E] rounded-xl p-6 mb-6 border border-[#533483]/30">
+                    <CameraCapture
+                        onCapture={setCapturedPhoto}
+                        roomId={roomId}
+                    />
+                </div>
+
+                {/* Join Button */}
+                <button
+                    onClick={() => joinRoom(roomId)}
+                    disabled={isLoading}
+                    className="w-full py-4 px-6 bg-gradient-to-r from-[#E94560] to-[#533483] hover:from-[#533483] hover:to-[#E94560] text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-[#E94560]/50 flex items-center justify-center gap-2"
+                >
+                    {isLoading ? (
+                        <>
+                            <span className="animate-spin">⟳</span>
+                            Joining...
+                        </>
+                    ) : (
+                        <>
+                            <span>Join Room</span>
+                            <span className="transform group-hover:translate-x-1">→</span>
+                        </>
+                    )}
+                </button>
+
+                {/* Room ID Display */}
+                <div className="mt-6 text-center">
+                    <p className="text-gray-400 text-sm">
+                        Room ID: <span className="text-[#E94560] font-medium">{roomId}</span>
+                    </p>
                 </div>
             </div>
         </div>

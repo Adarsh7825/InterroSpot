@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { FaArrowRight } from "react-icons/fa"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import HighlightText from '../components/core/HomePage/HighlightText'
 
 import CTAButton from "../components/core/HomePage/Button"
@@ -46,16 +46,24 @@ const randomImges = [
 
 
 const Home = () => {
+    const navigate = useNavigate();
 
     // get background random images
     const [backgroundImg, setBackgroundImg] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const [roomCode, setRoomCode] = useState('');
 
     useEffect(() => {
         const bg = randomImges[Math.floor(Math.random() * randomImges.length)]
         setBackgroundImg(bg);
     }, [])
 
-
+    const handleJoinRoom = (e) => {
+        e.preventDefault();
+        if (roomCode.trim()) {
+            navigate(`/room/${roomCode}`);
+        }
+    }
 
     return (
         <React.Fragment>
@@ -118,6 +126,14 @@ const Home = () => {
                         <CTAButton active={false} linkto={"/dashboard/form"}>
                             Create Interview
                         </CTAButton>
+
+                        <button
+                            onClick={() => setShowModal(true)}
+                            className="flex items-center gap-2 rounded-md py-2 px-5 font-semibold text-richblack-100 border border-richblack-700 bg-richblack-800"
+                        >
+                            Join Room
+                        </button>
+
                         <CTAButton active={false} linkto={"/create-room"}>
                             Pair Programming
                         </CTAButton>
@@ -249,6 +265,39 @@ const Home = () => {
                     <InterviewerSection />
                 </div>
             </div >
+
+            {/* Add Modal */}
+            {showModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-richblack-800 p-8 rounded-lg w-96">
+                        <h2 className="text-2xl font-bold mb-4 text-white">Enter Room Code</h2>
+                        <form onSubmit={handleJoinRoom}>
+                            <input
+                                type="text"
+                                value={roomCode}
+                                onChange={(e) => setRoomCode(e.target.value)}
+                                className="w-full p-2 mb-4 rounded bg-richblack-700 text-white"
+                                placeholder="Enter room code"
+                            />
+                            <div className="flex gap-4">
+                                <button
+                                    type="submit"
+                                    className="flex-1 py-2 px-4 bg-yellow-50 text-black rounded font-semibold"
+                                >
+                                    Join
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowModal(false)}
+                                    className="flex-1 py-2 px-4 bg-richblack-700 text-white rounded"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </React.Fragment>
     )
 }

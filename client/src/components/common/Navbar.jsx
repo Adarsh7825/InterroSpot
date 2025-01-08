@@ -12,6 +12,7 @@ import MobileProfileDropDown from '../core/Auth/MobileProfileDropDown'
 const Navbar = () => {
     const location = useLocation();
     const { token } = useSelector((state) => state.auth);
+    const { user } = useSelector((state) => state.profile);
     const [subLinks, setSubLinks] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -53,7 +54,7 @@ const Navbar = () => {
             <div className='flex w-11/12 max-w-maxContent items-center justify-between '>
                 {/* logo */}
                 <Link to="/">
-                    <img src={InterroSpot} width={160} height={42} loading='lazy' />
+                    <img src={InterroSpot} width={160} height={42} loading='lazy' alt="InterroSpot Logo" />
                 </Link>
 
                 {/* Nav Links - visible for only large devices*/}
@@ -62,86 +63,80 @@ const Navbar = () => {
                         NavbarLinks.map((link, index) => (
                             <li key={index}>
                                 {
-                                    link?.title === "Services" ? (
+                                    link?.sublinks ? (
                                         <div
-                                            className={`group relative flex cursor-pointer items-center gap-1 ${matchRoute("/Services/:ServicesName")
-                                                ? "bg-yellow-25 text-black rounded-xl p-1 px-3"
-                                                : "text-richblack-25 rounded-xl p-1 px-3"
+                                            className={`group relative flex cursor-pointer items-center gap-1 ${matchRoute(link.path) ? "text-yellow-25" : "text-richblack-25"
                                                 }`}
                                         >
-                                            <p>{link?.title}</p>
+                                            <p>{link.title}</p>
                                             <MdKeyboardArrowDown />
-                                            {/* drop down menu */}
-                                            <div className="invisible absolute left-[50%] top-[50%] z-[1000] flex w-[200px] translate-x-[-50%] translate-y-[3em] 
-                                                    flex-col rounded-lg bg-richblack-5 p-4 text-richblack-900 opacity-0 transition-all duration-150 group-hover:visible 
-                                                    group-hover:translate-y-[1.65em] group-hover:opacity-100 lg:w-[300px]"
-                                            >
-                                                <div className="absolute left-[50%] top-0 z-[100] h-6 w-6 translate-x-[80%] translate-y-[-40%] rotate-45 select-none rounded bg-richblack-5"></div>
-                                                {loading ? (<p className="text-center ">Loading...</p>)
-                                                    : subLinks?.length ? (
-                                                        <>
-                                                            {subLinks?.map((subLink, i) => (
-                                                                <Link
-                                                                    to={`/Services/${subLink?.name
-                                                                        .split(" ")
-                                                                        .join("-")
-                                                                        .toLowerCase()}`}
-                                                                    className="rounded-lg bg-transparent py-4 pl-4 hover:bg-richblack-50"
-                                                                    key={i}
-                                                                >
-                                                                    <p>{subLink?.name}</p>
-                                                                </Link>
-                                                            ))}
-                                                        </>
-                                                    ) : (
-                                                        <p className="text-center">No Courses Found</p>
-                                                    )}
+                                            <div className="invisible absolute left-[50%] top-[50%] z-[1000] flex w-[200px] 
+                                                translate-x-[-50%] translate-y-[3em] flex-col rounded-lg bg-richblack-5 p-4 
+                                                text-richblack-900 opacity-0 transition-all duration-150 group-hover:visible 
+                                                group-hover:translate-y-[1.65em] group-hover:opacity-100 lg:w-[300px]">
+                                                {link.sublinks.map((sublink, i) => (
+                                                    <Link
+                                                        key={i}
+                                                        to={sublink.path}
+                                                        className="rounded-lg bg-transparent py-4 pl-4 hover:bg-richblack-50"
+                                                    >
+                                                        <p>{sublink.title}</p>
+                                                    </Link>
+                                                ))}
                                             </div>
                                         </div>
                                     ) : (
-                                        <Link to={link?.path}>
-                                            <p className={`${matchRoute(link?.path) ? "bg-yellow-25 text-black" : "text-richblack-25"} rounded-xl p-1 px-3 `}>
+                                        <Link to={link.path}>
+                                            <p className={`${matchRoute(link.path) ? "text-yellow-25" : "text-richblack-25"
+                                                }`}>
                                                 {link.title}
                                             </p>
-                                        </Link>)
+                                        </Link>
+                                    )
                                 }
                             </li>
-                        ))}
+                        ))
+                    }
                 </ul>
 
-                {/* Login and Signup Button */}
-
+                {/* Login/Signup or Dashboard Buttons */}
                 <div className='flex gap-x-4 items-center'>
-
-                    {
-                        token === null && (
+                    {!token && (
+                        <>
                             <Link to="/login">
-                                <button className={` px-[12px] py-[8px] text-richblack-100 rounded-md 
-                                 ${matchRoute('/login') ? 'border-[2.5px] border-yellow-50' : 'border border-richblack-700 bg-richblack-800'} `}
-                                >
-                                    Log in
+                                <button className='px-[12px] py-[8px] text-richblack-100 rounded-md 
+                                    border border-richblack-700 bg-richblack-800'>
+                                    Sign In
                                 </button>
                             </Link>
-                        )
-                    }
-                    {
-                        token === null && (
                             <Link to="/signup">
-
-                                <button className={` px-[12px] py-[8px] text-richblack-100 rounded-md 
-                                 ${matchRoute('/signup') ? 'border-[2.5px] border-yellow-50' : 'border border-richblack-700 bg-richblack-800'} `}
-                                >
-                                    Sign Up
+                                <button className='px-[12px] py-[8px] text-richblack-100 rounded-md 
+                                    bg-yellow-50 text-black hover:bg-yellow-25'>
+                                    {user?.accountType === "RECRUITER" ? "Hire Talent" : "Practice Now"}
                                 </button>
                             </Link>
-                        )
-                    }
+                        </>
+                    )}
 
-                    {/* For Large device */}
-                    {token !== null && <ProfileDropdown />}
-
-                    {/* For small devices */}
-                    {token !== null && <MobileProfileDropDown />}
+                    {token && (
+                        <>
+                            {user?.accountType === "RECRUITER" ? (
+                                <Link to="/dashboard/create-interview">
+                                    <button className='yellowButton'>
+                                        Create Interview
+                                    </button>
+                                </Link>
+                            ) : (
+                                <Link to="/practice">
+                                    <button className='yellowButton'>
+                                        Start Practice
+                                    </button>
+                                </Link>
+                            )}
+                            <ProfileDropdown />
+                            <MobileProfileDropDown />
+                        </>
+                    )}
                 </div>
             </div>
         </nav>

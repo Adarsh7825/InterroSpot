@@ -4,15 +4,29 @@ export const NavbarLinks = [
     path: "/",
   },
   {
-    title: "Services",
-    // path: '/catalog',
+    title: "Practice",
+    path: "/practice",
+    sublinks: [
+      {
+        title: "Coding Problems",
+        path: "/practice/problems"
+      },
+      {
+        title: "Interview Questions",
+        path: "/practice/questions"
+      }
+    ]
   },
   {
-    title: "About Us",
-    path: "/about",
+    title: "Mock Interviews",
+    path: "/interviews",
   },
   {
-    title: "Contact Us",
-    path: "/contact",
+    title: "Pair Programming",
+    path: "/pair-programming",
   },
+  {
+    title: "Resources",
+    path: "/resources",
+  }
 ];

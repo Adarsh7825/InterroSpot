@@ -40,3 +40,7 @@ export const codeExecutionEndpoints = {
 export const createQuestionEndpoints = {
     CREATE_QUESTION_API: BASE_URL + "/question/createQuestion"
 }
+
+export const sendPdfEndpoints = {
+    SEND_PDF_API: BASE_URL + "/sendpdftorecruiter/send-pdf"
+}

@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"
+import { FaUserTie, FaCode } from "react-icons/fa"
 import { useDispatch } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
-
 import { login } from "../../../services/operations/authAPI"
 
 function LoginForm() {
@@ -14,7 +14,6 @@ function LoginForm() {
     })
 
     const [showPassword, setShowPassword] = useState(false)
-
     const { email, password } = formData
 
     const handleOnChange = (e) => {
@@ -29,11 +28,61 @@ function LoginForm() {
         dispatch(login(email, password, navigate))
     }
 
+    // Demo login handlers
+    const handleCandidateDemo = () => {
+        setFormData({
+            email: "adarshgupta2626@gmail.com",
+            password: "adarshgupta2626@gmail.com"
+        })
+    }
+
+    const handleRecruiterDemo = () => {
+        setFormData({
+            email: "beyog88735@noefa.com",
+            password: "beyog88735@noefa.com"
+        })
+    }
+
     return (
         <form
             onSubmit={handleOnSubmit}
             className="mt-6 flex w-full flex-col gap-y-4"
         >
+            {/* Demo Account Selection */}
+            <div className="flex flex-col gap-y-4 mb-6">
+                <h3 className="text-richblack-5 text-lg font-semibold">Quick Access Demo Accounts</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button
+                        type="button"
+                        onClick={handleCandidateDemo}
+                        className="flex items-center justify-center gap-2 rounded-lg bg-richblack-800 py-3 px-4 text-richblack-5 hover:bg-richblack-700 border border-richblack-700 transition-all duration-200"
+                    >
+                        <FaCode className="text-xl" />
+                        <div className="flex flex-col items-start">
+                            <span className="font-semibold">Candidate Demo</span>
+                            <span className="text-xs text-richblack-300">Practice Interviews</span>
+                        </div>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleRecruiterDemo}
+                        className="flex items-center justify-center gap-2 rounded-lg bg-richblack-800 py-3 px-4 text-richblack-5 hover:bg-richblack-700 border border-richblack-700 transition-all duration-200"
+                    >
+                        <FaUserTie className="text-xl" />
+                        <div className="flex flex-col items-start">
+                            <span className="font-semibold">Recruiter Demo</span>
+                            <span className="text-xs text-richblack-300">Conduct Interviews</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div className="flex items-center gap-2 mb-4">
+                <div className="h-[1px] w-full bg-richblack-700"></div>
+                <p className="text-richblack-300 font-medium">OR</p>
+                <div className="h-[1px] w-full bg-richblack-700"></div>
+            </div>
+
             <label className="w-full">
                 <p className="mb-1 text-[0.875rem] leading-[1.375rem] text-richblack-5">
                     Email Address <sup className="text-pink-200">*</sup>
@@ -85,9 +134,9 @@ function LoginForm() {
             </label>
             <button
                 type="submit"
-                className="mt-6 rounded-[8px] bg-yellow-50 py-[8px] px-[12px] font-medium text-richblack-900"
+                className="mt-6 rounded-lg bg-yellow-50 py-3 px-4 font-semibold text-richblack-900 hover:bg-yellow-25 transition-all duration-200"
             >
-                Sign In
+                Sign In to InterroSpot
             </button>
         </form>
     )

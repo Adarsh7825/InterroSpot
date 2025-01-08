@@ -14,6 +14,7 @@ import { fetchQuestions } from "../services/operations/roomAPI";
 import QuestionList from "../components/core/Room/QuestionList";
 import GeneratePDF from "../components/core/Room/GeneratePDF";
 import { setupSocketHandlers, leaveRoom } from "../components/core/Room/SocketHandlers";
+import { throttle } from 'lodash';
 
 const Room = () => {
     const userVideoRef = useRef(null);
@@ -91,16 +92,17 @@ const Room = () => {
     }, [roomid]);
 
     useEffect(() => {
-        const handleMouseMove = (e) => {
+        const handleMouseMove = throttle((e) => {
             const x = e.clientX;
             const y = e.clientY;
             socket.emit('update-cursor-position', { roomId: roomid, username: user.firstName, x, y });
-        };
+        }, 50);
 
         document.addEventListener('mousemove', handleMouseMove);
 
         return () => {
             document.removeEventListener('mousemove', handleMouseMove);
+            handleMouseMove.cancel();
         };
     }, [socket, roomid, user.firstName]);
 
@@ -185,59 +187,118 @@ const Room = () => {
 
     if (user.rooms && user) {
         return (
-            <div className="flex flex-col h-screen">
-                <div className="flex justify-between items-center p-4 bg-gray-800 text-white">
-                    <button id="leave-room" className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-600 hover:from-blue-500 hover:via-purple-600 hover:to-pink-700 text-white font-bold rounded" onClick={() => leaveRoom(socket, roomid, navigate)}>🚪 Leave Room</button>
-                    {user.accountType !== ACCOUNT_TYPE.CANDIDATE && <GeneratePDF roomid={roomid} questions={questions} overallFeedback={overallFeedbackVerdict} />}
-                </div>
-                <div className="flex flex-grow">
-                    <div id="editor" className="w-1/3 border-r border-gray-700">
-                        <Ace
-                            updateRoom={(patch) => socket.emit('update', { roomid, patch })}
-                            code={code}
-                            setCode={setCode}
-                            language={language}
-                            setLanguage={setLanguage}
-                            roomid={roomid}
-                            EditorRef={EditorRef}
-                            input={input}
-                            setInput={setInput}
-                            output={output}
-                            setOutput={setOutput}
-                            IOEMIT={(a, b, c) => socket.emit('updateIO', { roomid, input: a, output: b, language: c })}
-                            run={run}
-                            running={running}
-                        />
+            <div className="h-screen bg-gradient-to-br from-[#1A1A2E] to-[#16213E] flex flex-col">
+                {/* Enhanced Header */}
+                <header className="bg-[#0F3460]/50 backdrop-blur-md px-8 py-4 flex items-center justify-between border-b border-[#533483]/20">
+                    <div className="flex items-center space-x-6">
+                        <button
+                            onClick={() => leaveRoom(socket, roomid, navigate)}
+                            className="group px-5 py-2.5 bg-gradient-to-r from-[#E94560] to-[#533483] hover:from-[#533483] hover:to-[#E94560] text-white rounded-lg flex items-center space-x-2 transition-all duration-300 shadow-lg hover:shadow-[#E94560]/50"
+                        >
+                            <span className="transform group-hover:-translate-x-1 transition-transform">←</span>
+                            <span className="font-medium">Exit Room</span>
+                        </button>
+                        <div className="flex flex-col">
+                            <h1 className="text-white text-xl font-bold">Room: <span className="text-[#E94560]">{roomid}</span></h1>
+                            <p className="text-gray-400 text-sm">Connected Users: {inRoomUsers.length}</p>
+                        </div>
                     </div>
-                    <div
-                        id="resize-editor"
-                        className="w-1 bg-gray-900 cursor-col-resize"
-                        onMouseDown={handleMouseDown}
-                    ></div>
-                    <div className="w-2/3 flex flex-col bg-gray-900 overflow-auto">
-                        <div className="flex justify-between bg-gray-900 text-white">
-                            <button className="flex-1 p-2" onClick={() => setActiveTab('console')}>Console</button>
+                    <div className="flex items-center space-x-6">
+                        {user.accountType !== ACCOUNT_TYPE.CANDIDATE && (
+                            <GeneratePDF
+                                roomid={roomid}
+                                questions={questions}
+                                overallFeedback={overallFeedbackVerdict}
+                            />
+                        )}
+                        <div className="flex -space-x-3 hover:space-x-1 transition-all duration-300">
+                            {inRoomUsers.map((user, index) => (
+                                <div
+                                    key={index}
+                                    className="w-10 h-10 rounded-xl border-2 border-[#E94560] overflow-hidden transform hover:scale-110 transition-transform duration-300 hover:shadow-lg hover:shadow-[#E94560]/30"
+                                    title={user.name}
+                                >
+                                    <img
+                                        src={user.avatar}
+                                        alt={user.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </header>
+
+                {/* Main Content with Glass Effect */}
+                <div className="flex flex-1 overflow-hidden p-4 gap-4">
+                    {/* Editor Section */}
+                    <div className="flex flex-col w-[60%] rounded-xl bg-[#0F3460]/30 backdrop-blur-lg border border-[#533483]/20 shadow-xl">
+                        <div className="flex-1 p-2">
+                            <Ace
+                                updateRoom={(patch) => socket.emit('update', { roomid, patch })}
+                                code={code}
+                                setCode={setCode}
+                                language={language}
+                                setLanguage={setLanguage}
+                                roomid={roomid}
+                                EditorRef={EditorRef}
+                                input={input}
+                                setInput={setInput}
+                                output={output}
+                                setOutput={setOutput}
+                                IOEMIT={(a, b, c) => socket.emit('updateIO', { roomid, input: a, output: b, language: c })}
+                                run={run}
+                                running={running}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Right Panel */}
+                    <div className="flex flex-col w-[40%] rounded-xl bg-[#0F3460]/30 backdrop-blur-lg border border-[#533483]/20 shadow-xl">
+                        {/* Enhanced Tabs */}
+                        <div className="flex p-2 gap-2">
+                            <button
+                                className={`flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 ${activeTab === 'console'
+                                    ? 'bg-[#E94560] text-white shadow-lg shadow-[#E94560]/50'
+                                    : 'text-gray-400 hover:bg-[#533483]/20 hover:text-white'
+                                    }`}
+                                onClick={() => setActiveTab('console')}
+                            >
+                                Console
+                            </button>
                             {user.accountType !== ACCOUNT_TYPE.CANDIDATE && (
-                                <button className="flex-1 p-2" onClick={() => setActiveTab('questions')}>Questions</button>
+                                <button
+                                    className={`flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 ${activeTab === 'questions'
+                                        ? 'bg-[#E94560] text-white shadow-lg shadow-[#E94560]/50'
+                                        : 'text-gray-400 hover:bg-[#533483]/20 hover:text-white'
+                                        }`}
+                                    onClick={() => setActiveTab('questions')}
+                                >
+                                    Questions
+                                </button>
                             )}
                         </div>
-                        <div className="flex-grow overflow-auto">
+
+                        {/* Tab Content */}
+                        <div className="flex-1 overflow-auto p-4">
                             {activeTab === 'console' ? (
-                                <div className="p-4">
-                                    <div className="input mb-4">
-                                        <h5 className="text-white">Input</h5>
+                                <div className="space-y-4">
+                                    <div className="group">
+                                        <label className="block text-sm font-medium text-gray-400 mb-2 group-hover:text-[#E94560] transition-colors">Input</label>
                                         <textarea
-                                            className="w-full h-32 p-2 bg-gray-900"
+                                            className="w-full h-32 bg-[#1A1A2E] text-white p-4 rounded-lg border border-[#533483]/30 focus:outline-none focus:border-[#E94560] transition-all duration-300 resize-none"
                                             value={input}
                                             onChange={(e) => setInput(e.target.value)}
+                                            placeholder="Enter your input here..."
                                         />
                                     </div>
-                                    <div className="output">
-                                        <h5 className="text-white">Output</h5>
+                                    <div className="group">
+                                        <label className="block text-sm font-medium text-gray-400 mb-2 group-hover:text-[#E94560] transition-colors">Output</label>
                                         <textarea
-                                            className="w-full h-32 p-2 bg-gray-900"
+                                            className="w-full h-32 bg-[#1A1A2E] text-white p-4 rounded-lg border border-[#533483]/30 resize-none"
                                             value={output}
                                             readOnly
+                                            placeholder="Output will appear here..."
                                         />
                                     </div>
                                 </div>
@@ -255,6 +316,8 @@ const Room = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Video Chat and Whiteboard */}
                 <VideoChat
                     socket={socket}
                     roomid={roomid}
@@ -270,25 +333,54 @@ const Room = () => {
                     }}
                 />
                 <WhiteBoard roomId={roomid} socket={socket} />
-                <ToastContainer autoClose={2000} />
-                {Object.entries(clientCursors).map(([username, { x, y }]) => (
-                    <div
-                        key={username}
-                        className="w-4 h-4 absolute rounded-full transform -translate-x-1/2 -translate-y-1/2 cursor-pointer border-2 border-white"
-                        style={{
-                            left: `${x}px`,
-                            top: `${y}px`,
-                            backgroundColor: generateColor(username),
-                            boxShadow: '0 0 5px rgba(0, 0, 0, 0.5)',
-                            zIndex: 1000,
-                            pointerEvents: 'none',
-                        }}
-                    >
-                        <span className="text-[#ff9f1c] m-3 text-xs font-semibold">{username}</span>
-                    </div>
-                ))}
+
+                {/* Enhanced Cursor Indicators */}
+                {Object.entries(clientCursors)
+                    .filter(([username]) => username !== user.firstName)
+                    .map(([username, { x, y }]) => (
+                        <div
+                            key={username}
+                            className="absolute pointer-events-none transition-all duration-200"
+                            style={{
+                                left: `${x}px`,
+                                top: `${y}px`,
+                                transform: 'translate(0, 0)',
+                                zIndex: 1000,
+                            }}
+                        >
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                className="cursor-pointer-icon"
+                                style={{
+                                    transform: 'translate(-2px, -2px)'
+                                }}
+                            >
+                                <path
+                                    fill={generateColor(username)}
+                                    d="M3,3L21,21L18,23L0,5L3,3Z"
+                                    stroke="white"
+                                    strokeWidth="1"
+                                />
+                            </svg>
+                            <span
+                                className="absolute left-4 top-0 text-xs font-medium text-white bg-[#0F3460]/75 
+                                          px-2 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap"
+                            >
+                                {username}
+                            </span>
+                        </div>
+                    ))
+                }
+
+                <ToastContainer
+                    position="bottom-right"
+                    autoClose={2000}
+                    theme="dark"
+                />
             </div>
-        )
+        );
     }
 };
 

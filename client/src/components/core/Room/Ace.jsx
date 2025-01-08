@@ -41,7 +41,7 @@ const Ace = ({
 }) => {
     const dispatch = useDispatch();
     const dmp = new diff_match_patch();
-    const [theme, setTheme] = useState('monokai');
+    const [theme, setTheme] = useState('cobalt');
     const [fontSize, setFontSize] = useState(18);
     const [fontFamily, setFontFamily] = useState('monospace');
     const { user } = useSelector((state) => state.profile);
@@ -77,8 +77,8 @@ const Ace = ({
     };
 
     return (
-        <div className="h-full">
-            <div className="flex justify-between items-center p-4 bg-gray-800 text-white">
+        <div className="h-full flex flex-col">
+            <div className="bg-[#0F3460]/50 backdrop-blur-md p-4 border-b border-[#533483]/20">
                 <Settings
                     setLanguage={setLanguage}
                     setTheme={setTheme}
@@ -94,7 +94,7 @@ const Ace = ({
                     running={running}
                 />
             </div>
-            <div id='workspace' className="flex flex-col h-full">
+            <div id='workspace' className="flex-1 bg-[#1A1A2E]">
                 <AceEditor
                     setOptions={{
                         useWorker: false,
@@ -117,6 +117,11 @@ const Ace = ({
                     defaultValue=''
                     ref={EditorRef}
                     editorProps={{ $blockScrolling: true }}
+                    className="rounded-lg shadow-lg"
+                    style={{
+                        borderRadius: '0.5rem',
+                        border: '1px solid rgba(83, 52, 131, 0.2)',
+                    }}
                 />
             </div>
         </div>

@@ -2,8 +2,12 @@ import React from 'react';
 import jsPDF from 'jspdf';
 import { fetchCandidateImage, fetchInterviewerImage, fetchJobPosition } from "../../../services/operations/roomAPI";
 import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
+import { sendPftoRecruiterAPI } from '../../../services/operations/sendPftoRecruiterAPI';
 
 const GeneratePDF = ({ roomid, questions, overallFeedback }) => {
+    const user = useSelector((state) => state.profile);
+    console.log(user + "2333333333");
     const generatePDF = async () => {
         try {
             console.log('Generating PDF...');
@@ -104,13 +108,12 @@ const GeneratePDF = ({ roomid, questions, overallFeedback }) => {
             formData.append('roomid', roomid);
 
             // Send the Blob to the server
-            const response = await fetch('/api/send-pdf', {
-                method: 'POST',
-                body: formData,
-            });
-
+            const response = await sendPftoRecruiterAPI(user.token, roomid, doc);
+            console.log(response)
             if (response.ok) {
                 toast.success('PDF generated and sent successfully!');
+                // Trigger download
+                doc.save('interview_feedback.pdf');
             } else {
                 throw new Error('Failed to send PDF');
             }

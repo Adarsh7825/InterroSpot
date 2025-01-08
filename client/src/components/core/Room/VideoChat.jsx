@@ -176,26 +176,40 @@ const VideoChat = ({ socket, roomid, user, userVideo, closeIt }) => {
             minHeight={200}
             bounds="parent"
         >
-            <div className="video-chat flex flex-col items-center w-full h-full bg-black bg-opacity-80 rounded-lg p-4">
+            <div className="video-chat flex flex-col w-full h-full bg-[#1A1A2E]/95 backdrop-blur-lg rounded-xl border border-[#533483]/20 shadow-lg overflow-hidden">
                 {screen && !isOppositeUserTabActive && user.accountType !== ACCOUNT_TYPE.CANDIDATE && (
-                    <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-75 text-white text-lg font-semibold">
-                        user is on another tab
+                    <div className="absolute inset-0 flex items-center justify-center bg-[#1A1A2E]/90 backdrop-blur-sm z-50">
+                        <p className="text-[#E94560] text-lg font-medium">User is on another tab</p>
                     </div>
                 )}
-                <div className="users flex flex-col md:flex-row w-full h-full">
-                    <div className="user-video flex flex-col items-center w-full md:w-1/2 h-full">
-                        <h1 className={`waiting-video text-center text-gray-500 ${remotePeerIdValue ? 'hidden' : 'block'}`}>Waiting for user to Join</h1>
-                        <video ref={remoteVideoRef} className="w-full h-auto" />
-                        <h2 className="user-name text-center text-lg font-semibold">{guestName.current}</h2>
+
+                <div className="users grid grid-cols-2 gap-2 p-2 w-full h-full relative">
+                    <div className="user-video relative rounded-lg overflow-hidden bg-[#0F3460]/30">
+                        <h1 className="waiting-video absolute inset-0 flex items-center justify-center text-[#E94560]/70 text-sm">
+                            Waiting for user...
+                        </h1>
+                        <video ref={remoteVideoRef} className="w-full h-full object-cover" />
+                        <div className="user-name absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/70 text-white text-sm">
+                            {guestName.current}
+                        </div>
                     </div>
-                    <div className="user-video relative flex flex-col items-center w-full md:w-1/2 h-full">
-                        <video ref={userVideo} muted className="w-full h-auto" />
-                        <h2 className="user-name text-center text-lg font-semibold">{user.name}</h2>
+
+                    <div className="user-video relative rounded-lg overflow-hidden bg-[#0F3460]/30">
+                        <video ref={userVideo} muted className="w-full h-full object-cover" />
+                        <div className="user-name absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/70 text-white text-sm">
+                            {user.name}
+                        </div>
+
                         {peerId && screen && (
                             <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                                <button onClick={muteVideo} className={`p-2 rounded ${video ? "bg-green-500" : "bg-red-500"}`}>
-                                    {video ? <i className="fas fa-video text-white"></i> : <i className="fas fa-video-slash"></i>}
+                                <button
+                                    onClick={muteVideo}
+                                    className={`p-2 rounded-full backdrop-blur-sm transition-all duration-300 ${video ? "bg-[#E94560]/80 hover:bg-[#E94560]" : "bg-red-500/80 hover:bg-red-500"
+                                        }`}
+                                >
+                                    <i className={`fas fa-video${!video ? '-slash' : ''} text-white text-sm`}></i>
                                 </button>
+
                                 <button onClick={muteAudio} className={`p-2 rounded ${audio ? "bg-green-500" : "bg-red-500"}`}>
                                     {audio ? <i className="fas fa-microphone text-white"></i> : <i className="fas fa-microphone-slash"></i>}
                                 </button>
