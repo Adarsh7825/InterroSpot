@@ -4,6 +4,7 @@ import { io } from "socket.io-client";
 
 const WhiteBoard = ({ socket, roomId }) => {
     const [isActive, setIsActive] = useState(false);
+    const [canvasData, setCanvasData] = useState(null);
 
     useEffect(() => {
         socket.on("connect", () => {
@@ -15,6 +16,15 @@ const WhiteBoard = ({ socket, roomId }) => {
         const ctx = canvas.getContext('2d');
         const width = canvas.width = window.innerWidth;
         const height = canvas.height = window.innerHeight - 80 - 50;
+
+        if (canvasData) {
+            const img = new Image();
+            img.onload = () => {
+                ctx.drawImage(img, 0, 0);
+            };
+            img.src = canvasData;
+        }
+
         let time = performance.now();
         const cursor = document.querySelector("#cursor");
         const shapeDemo = document.querySelector("#shape-demo");
@@ -338,6 +348,7 @@ const WhiteBoard = ({ socket, roomId }) => {
 
         const handleWhiteBoardToggle = () => {
             if (isActive) {
+                setCanvasData(canvas.toDataURL());
                 socket.emit("closeWhiteBoard", { roomId });
             } else {
                 socket.emit("openWhiteBoard", { roomId });
@@ -348,10 +359,26 @@ const WhiteBoard = ({ socket, roomId }) => {
         const whiteBoardBtn = document.querySelector("#white-board-btn");
         whiteBoardBtn.addEventListener("click", handleWhiteBoardToggle);
 
+        const handleResize = () => {
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            tempCtx.drawImage(canvas, 0, 0);
+
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight - 80 - 50;
+
+            ctx.drawImage(tempCanvas, 0, 0);
+        };
+
+        window.addEventListener('resize', handleResize);
+
         return () => {
             whiteBoardBtn.removeEventListener("click", handleWhiteBoardToggle);
+            window.removeEventListener('resize', handleResize);
         };
-    }, [isActive, roomId, socket]);
+    }, [isActive, roomId, socket, canvasData]);
 
     useEffect(() => {
         socket.on("openWhiteBoard", () => {
