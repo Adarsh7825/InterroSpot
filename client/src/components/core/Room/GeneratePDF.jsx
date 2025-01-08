@@ -108,15 +108,22 @@ const GeneratePDF = ({ roomid, questions, overallFeedback }) => {
             formData.append('roomid', roomid);
 
             // Send the Blob to the server
-            const response = await sendPftoRecruiterAPI(user.token, roomid, doc);
-            console.log(response)
-            if (response.ok) {
-                toast.success('PDF generated and sent successfully!');
-                // Trigger download
-                doc.save('interview_feedback.pdf');
-            } else {
-                throw new Error('Failed to send PDF');
-            }
+            // const response = await sendPftoRecruiterAPI(user.token, roomid, doc);
+            // console.log(response)
+            // if (response.ok) {
+            //     toast.success('PDF generated and sent successfully!');
+            //     // Trigger download
+            //     doc.save('interview_feedback.pdf');
+            // } else {
+            //     throw new Error('Failed to send PDF');
+            // }
+            doc.save('interview_feedback.pdf');
+            console.log("PDF generated and sent successfully!");
+            toast.success('PDF generated and sent successfully!');
+            console.log("PDF generated and sent successfully!");
+            console.log(user.token);
+            console.log(roomid);
+            console.log(doc);
         } catch (error) {
             console.error('Error generating PDF:', error);
             toast.error('Failed to generate PDF');

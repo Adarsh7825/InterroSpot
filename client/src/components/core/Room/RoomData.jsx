@@ -7,6 +7,12 @@ import { DataContext } from '../../../context/DataContext';
 import { generateFromString } from 'generate-avatar';
 import CameraCapture from './CameraCapture';
 import { fetchRoom } from '../../../services/operations/roomAPI';
+import AceEditor from 'react-ace';
+
+// Import ace builds
+import 'ace-builds/src-noconflict/mode-javascript';
+import 'ace-builds/src-noconflict/theme-monokai';
+import 'ace-builds/src-noconflict/ext-language_tools';
 
 const RoomData = () => {
     const { setCurrRoom, setUser, socket } = useContext(DataContext);

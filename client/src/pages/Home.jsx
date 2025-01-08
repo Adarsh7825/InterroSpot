@@ -80,20 +80,21 @@ const Home = () => {
 
             <div className=' '>
                 {/*Section1  */}
-                <div className='relative h-[450px] md:h-[550px] justify-center mx-auto flex flex-col w-11/12 max-w-maxContent items-center text-white '>
+                <div className='relative h-[450px] md:h-[550px] justify-center mx-auto flex flex-col w-11/12 max-w-maxContent items-center text-white'>
 
+                    {/* Become Interviewer Button */}
                     <Link to={"/signup"}>
-                        <div className='z-0 group p-1 mx-auto rounded-full bg-richblack-800 font-bold text-richblack-200
-                                        transition-all duration-200 hover:scale-95 w-fit'>
+                        <div className='z-0 group p-1 mx-auto rounded-full bg-gradient-to-r from-blue-500 to-purple-500 font-bold text-white
+                                    transition-all duration-200 hover:scale-95 w-fit'>
                             <div className='flex flex-row items-center gap-2 rounded-full px-10 py-[5px]
-                              transition-all duration-200 group-hover:bg-richblack-900'>
+                                transition-all duration-200 group-hover:bg-richblack-900 backdrop-blur-sm'>
                                 <p>Become an Interviewer</p>
-                                <FaArrowRight />
+                                <FaArrowRight className="group-hover:translate-x-2 transition-transform" />
                             </div>
                         </div>
-
                     </Link>
 
+                    {/* Main Heading */}
                     <motion.div
                         variants={fadeIn('left', 0.1)}
                         initial='hidden'
@@ -102,40 +103,96 @@ const Home = () => {
                         className='text-center text-3xl lg:text-4xl font-semibold mt-7  '
                     >
                         Save your engineering
-                        <HighlightText text={"Bandwidth"} />
+                        <HighlightText text={" Bandwidth"} />
                     </motion.div>
-                    <motion.div>
-                        <input type="text" placeholder="Search Profile" className="w-96 h-10 mt-4 rounded-full border-none bg-richblack-800 text-white text-center placeholder-center" />
+
+                    {/* Search Bar */}
+                    <motion.div className="relative">
+                        <input
+                            type="text"
+                            placeholder="Search Profile"
+                            className="w-96 h-12 mt-6 rounded-full border-2 border-richblack-700 bg-richblack-800 text-white text-center 
+                                     placeholder-richblack-400 focus:border-blue-500 focus:outline-none transition-all duration-200
+                                     hover:shadow-[0_0_15px_rgba(56,189,248,0.2)]"
+                        />
+                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-richblack-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
                     </motion.div>
+
+                    {/* Subheading */}
                     <motion.div
                         variants={fadeIn('right', 0.1)}
                         initial='hidden'
                         whileInView={'show'}
                         viewport={{ once: false, amount: 0.1 }}
-                        className=' mt-4 w-[90%] text-center text-base lg:text-lg font-bold text-richblack-300'
+                        className='mt-4 w-[90%] text-center text-lg lg:text-xl font-medium text-richblack-300'
                     >
                         Outsource your interviews in just 2 simple steps
                     </motion.div>
 
-
-                    <div className='flex flex-row gap-7 mt-8'>
+                    {/* Action Buttons */}
+                    <div className='flex flex-wrap justify-center gap-4 mt-8'>
                         <CTAButton active={true} linkto={"/about"}>
-                            Learn More
+                            <span className="flex items-center gap-2">
+                                Learn More
+                                <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
+                            </span>
                         </CTAButton>
 
                         <CTAButton active={false} linkto={"/dashboard/form"}>
-                            Create Interview
+                            <span className="flex items-center gap-2">
+                                Create Interview
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                </svg>
+                            </span>
                         </CTAButton>
 
                         <button
                             onClick={() => setShowModal(true)}
-                            className="flex items-center gap-2 rounded-md py-2 px-5 font-semibold text-richblack-100 border border-richblack-700 bg-richblack-800"
+                            className="flex items-center gap-2 rounded-md py-3 px-6 font-semibold text-richblack-100 
+                                     border border-richblack-700 bg-richblack-800 hover:bg-richblack-700 
+                                     transition-all duration-200 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
                         >
                             Join Room
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
                         </button>
 
                         <CTAButton active={false} linkto={"/create-room"}>
-                            Pair Programming
+                            <span className="flex items-center gap-2">
+                                Pair Programming
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </span>
+                        </CTAButton>
+
+                        <CTAButton active={false} linkto={"/roomdata/NX5oHS"}>
+                            <span className="relative inline-flex items-center gap-2 px-6 py-2 
+                                     bg-gradient-to-r from-blue-500 to-purple-500 
+                                     text-white font-bold rounded-lg
+                                     animate-pulse hover:animate-none
+                                     hover:shadow-[0_0_15px_rgba(56,189,248,0.5)]
+                                     transition-all duration-300">
+                                Sample Room
+                                <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full 
+                                        animate-ping"></div>
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5 animate-bounce"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                            </span>
                         </CTAButton>
                     </div>
                 </div>

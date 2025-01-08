@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "postinstall": "mkdir -p public/ace-builds/src-noconflict && cp -r node_modules/ace-builds/src-noconflict/* public/ace-builds/src-noconflict/"
   },
   "dependencies": {
     "@mui/icons-material": "^5.15.19",

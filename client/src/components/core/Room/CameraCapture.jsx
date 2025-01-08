@@ -46,9 +46,9 @@ const CameraCapture = ({ onCapture, roomId }) => {
         const blob = await fetch(imageData).then(res => res.blob());
 
         if (user.accountType === ACCOUNT_TYPE.CANDIDATE) {
-            // dispatch(uploadPhotoForCandidate(roomId, blob));
+            dispatch(uploadPhotoForCandidate(roomId, blob));
         } else {
-            // dispatch(uploadPhotoForInterviewer(roomId, blob));
+            dispatch(uploadPhotoForInterviewer(roomId, blob));
         }
     };
 

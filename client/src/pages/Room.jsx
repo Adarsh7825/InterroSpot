@@ -15,6 +15,9 @@ import QuestionList from "../components/core/Room/QuestionList";
 import GeneratePDF from "../components/core/Room/GeneratePDF";
 import { setupSocketHandlers, leaveRoom } from "../components/core/Room/SocketHandlers";
 import { throttle } from 'lodash';
+import ace from 'ace-builds';
+
+ace.config.set('basePath', '/ace-builds/src-noconflict');
 
 const Room = () => {
     const userVideoRef = useRef(null);

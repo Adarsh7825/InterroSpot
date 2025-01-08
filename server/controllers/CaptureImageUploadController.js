@@ -1,11 +1,11 @@
 const Room = require('../DB/Schema/room');
-const { uploadImageToCloudinary } = require('../utils/imageUploader');
+const { uploadImageToCloudinary, deleteFromCloudinary } = require('../utils/imageUploader');
 const fs = require('fs');
 const mongoose = require('mongoose');
 
 exports.uploadImage = async (req, res) => {
     try {
-        console.log('Files:', req.files); // Log the files to debug
+        console.log('Files:', req.files);
         const { roomId } = req.params;
         const imageFile = req.files ? req.files.imageUrl : null;
 
@@ -20,25 +20,38 @@ exports.uploadImage = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Invalid room ID' });
         }
 
+        // Find the room first to get the existing image URL
+        const existingRoom = await Room.findOne({ roomid: roomId });
+        if (!existingRoom) {
+            return res.status(404).json({ success: false, message: 'Room not found' });
+        }
+
+        // If there's an existing image, delete it from Cloudinary
+        if (existingRoom.imageUrl) {
+            const publicId = getPublicIdFromUrl(existingRoom.imageUrl);
+            if (publicId) {
+                await deleteFromCloudinary(publicId);
+            }
+        }
+
         // Dynamically import tempfile
         const { default: tempfile } = await import('tempfile');
 
-        // Create a temporary file path with the new API
+        // Create a temporary file path
         const tempFilePath = tempfile({ extension: '.jpg' });
         fs.writeFileSync(tempFilePath, imageFile.data);
 
         const image = await uploadImageToCloudinary(tempFilePath, 'room_images', 1000, 1000);
 
-        // Find the room by roomid and update the imageUrl
-        const room = await Room.findOneAndUpdate({ roomid: roomId }, { imageUrl: image.secure_url }, { new: true });
+        // Update the room with new image URL
+        const room = await Room.findOneAndUpdate(
+            { roomid: roomId },
+            { imageUrl: image.secure_url },
+            { new: true }
+        );
 
         // Clean up the temporary file
         fs.unlinkSync(tempFilePath);
-
-        if (!room) {
-            console.log('Room not found');
-            return res.status(404).json({ success: false, message: 'Room not found' });
-        }
 
         res.status(200).json({ success: true, room });
     } catch (error) {
@@ -49,7 +62,7 @@ exports.uploadImage = async (req, res) => {
 
 exports.uploadImageforInterviewer = async (req, res) => {
     try {
-        console.log('Files:', req.files); // Log the files to debug
+        console.log('Files:', req.files);
         const { roomId } = req.params;
         const imageFile = req.files ? req.files.imageUrl : null;
 
@@ -64,25 +77,38 @@ exports.uploadImageforInterviewer = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Invalid room ID' });
         }
 
-        // Dynamically import tempfile
+        // Find the room first to get the existing image URL
+        const existingRoom = await Room.findOne({ roomid: roomId });
+        if (!existingRoom) {
+            return res.status(404).json({ success: false, message: 'Room not found' });
+        }
+
+        // If there's an existing image, delete it from Cloudinary
+        if (existingRoom.imageUrlforInterviewer) {
+            const publicId = getPublicIdFromUrl(existingRoom.imageUrlforInterviewer);
+            if (publicId) {
+                await deleteFromCloudinary(publicId);
+            }
+        }
+
+        // Dynamically import tempfile  
         const { default: tempfile } = await import('tempfile');
 
-        // Create a temporary file path with the new API
+        // Create a temporary file path
         const tempFilePath = tempfile({ extension: '.jpg' });
         fs.writeFileSync(tempFilePath, imageFile.data);
 
         const image = await uploadImageToCloudinary(tempFilePath, 'room_images', 1000, 1000);
 
-        // Find the room by roomid and update the imageUrl
-        const room = await Room.findOneAndUpdate({ roomid: roomId }, { imageUrlforInterviewer: image.secure_url }, { new: true });
+        // Update the room with new image URL
+        const room = await Room.findOneAndUpdate(
+            { roomid: roomId },
+            { imageUrlforInterviewer: image.secure_url },
+            { new: true }
+        );
 
         // Clean up the temporary file
         fs.unlinkSync(tempFilePath);
-
-        if (!room) {
-            console.log('Room not found');
-            return res.status(404).json({ success: false, message: 'Room not found' });
-        }
 
         res.status(200).json({ success: true, room });
     } catch (error) {
@@ -109,3 +135,16 @@ exports.getImages = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// Helper function to extract public_id from Cloudinary URL
+function getPublicIdFromUrl(url) {
+    try {
+        const urlParts = url.split('/');
+        const filename = urlParts[urlParts.length - 1];
+        const publicId = filename.split('.')[0];
+        return `room_images/${publicId}`;
+    } catch (error) {
+        console.error('Error extracting public_id:', error);
+        return null;
+    }
+}
