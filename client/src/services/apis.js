@@ -1,4 +1,4 @@
-const BASE_URL = "https://interrospot-production.onrender.com/api/v1";
+const BASE_URL = "https://interrospot-production-1.onrender.com/api/v1";
 
 export const endpoints = {
     SENDOTP_API: BASE_URL + "/auth/sendotp",
